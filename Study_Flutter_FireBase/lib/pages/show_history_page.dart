@@ -4,11 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class PaymentHistoryPage extends StatefulWidget {
   final Map<String, List<Map<String, dynamic>>> amounts;
   final String travelId;
+  final String collectionName;
 
   const PaymentHistoryPage({
     Key? key,
     required this.amounts,
     required this.travelId,
+    required this.collectionName,
   }) : super(key: key);
 
   @override
@@ -30,7 +32,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
     if (payment != null) {
       try {
         await FirebaseFirestore.instance
-            .collection('memo')
+            .collection(widget.collectionName)
             .doc(widget.travelId)
             .update({
           'amounts.$participant': FieldValue.arrayRemove([payment]),
@@ -52,12 +54,12 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("支払い履歴"),
+        title: const Text("支払い履歴", style: TextStyle(fontFamily: "Roboto")),
         backgroundColor: Colors.blue.shade300,
         elevation: 0,
       ),
       body: amounts.isEmpty
-          ? const Center(child: Text("支払い履歴がありません"))
+          ? const Center(child: Text("支払い履歴がありません", style: TextStyle(fontFamily: "Roboto")))
           : SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -69,7 +71,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                 children: [
                   Text(
                     entry.key,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    style: const TextStyle(fontSize: 18, fontFamily: "Roboto"),
                   ),
                   ...entry.value.map((payment) {
                     String memoText = payment['memo'] ?? 'メモなし';
@@ -80,8 +82,8 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                       ),
                       margin: const EdgeInsets.symmetric(vertical: 4.0),
                       child: ListTile(
-                        title: Text('¥${payment['amount']}', style: const TextStyle(fontSize: 16)),
-                        subtitle: Text(memoText, style: TextStyle(color: Colors.grey[600])),
+                        title: Text('¥${payment['amount']}', style: const TextStyle(fontSize: 16, fontFamily: "Roboto")),
+                        subtitle: Text(memoText, style: TextStyle(color: Colors.grey[600], fontFamily: "Roboto")),
                         trailing: IconButton(
                           icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () {

@@ -4,11 +4,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:study_flutter_firebase/pages/show_history_page.dart';
 import 'package:study_flutter_firebase/pages/suggest_next_pay.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class MemoDetailPage extends StatefulWidget {
+  const MemoDetailPage(
+      {required this.memoId, required this.collectionName, Key? key})
+      : super(key: key);
   final String memoId;
-
-  const MemoDetailPage({required this.memoId, Key? key}) : super(key: key);
+  final String collectionName;
 
   @override
   _MemoDetailPageState createState() => _MemoDetailPageState();
@@ -20,7 +24,11 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
   List<TextEditingController> _amountControllers = []; // 金額のテキストフィールド用のコントローラ
   List<TextEditingController> _memoControllers = []; // メモのテキストフィールド用のコントローラ
   Map<String, List<Map<String, dynamic>>> amounts = {}; // 支払履歴を保持するマップ
-  List<String> settlementResults = []; // 清算結果を表示するリスト
+  List<String> settlementResults = [];
+  List<String> currencies = ['JPY', 'USD', 'EUR', 'GBP'];
+  List<String?> selectedCurrencies = [];
+  final String apiKey = 'YOUR_API_KEY'; // APIキーを入れてください
+  List<String> memoEntries = List.filled(100, ""); // メモの内容を保持するリスト
 
   @override
   void initState() {
@@ -31,7 +39,7 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
   Future<void> _fetchMemoData() async {
     try {
       DocumentSnapshot memoDoc = await FirebaseFirestore.instance
-          .collection('memo')
+          .collection(widget.collectionName)
           .doc(widget.memoId)
           .get();
 
@@ -42,13 +50,20 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
           amounts = Map<String, List<Map<String, dynamic>>>.from(
             memoDoc['amounts']?.map(
                   (key, value) => MapEntry(
-                key,
-                List<Map<String, dynamic>>.from(value.map((entry) => Map<String, dynamic>.from(entry))),
-              ),
-            ) ?? {},
+                    key,
+                    List<Map<String, dynamic>>.from(
+                        value.map((entry) => Map<String, dynamic>.from(entry))),
+                  ),
+                ) ??
+                {},
           );
-          _amountControllers = List.generate(participants.length, (index) => TextEditingController());
-          _memoControllers = List.generate(participants.length, (index) => TextEditingController());
+          _amountControllers = List.generate(
+              participants.length, (index) => TextEditingController());
+          _memoControllers = List.generate(
+              participants.length, (index) => TextEditingController());
+          // selectedCurrencies に人数分の "JPY" を設定
+          selectedCurrencies =
+              List.generate(participants.length, (index) => "JPY");
         });
       } else {
         setState(() {
@@ -65,52 +80,72 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
     }
   }
 
+  Future<double> _convertToJPY(double amount, String? currency) async {
+    if (currency == 'JPY') {
+      return amount;
+    }
+
+    final url =
+        'https://v6.exchangerate-api.com/v6/645a1985815f1f802148fe2f/latest/$currency';
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final rates = json.decode(response.body)['conversion_rates'];
+      if (rates.containsKey('JPY')) {
+        double rate = rates['JPY'];
+        return amount * rate;
+      }
+    }
+    throw Exception("通貨レートの取得に失敗しました");
+  }
+
   Future<void> saveData() async {
     try {
-      DocumentReference memoDocRef = FirebaseFirestore.instance.collection('memo').doc(widget.memoId);
+      DocumentReference memoDocRef = FirebaseFirestore.instance
+          .collection(widget.collectionName)
+          .doc(widget.memoId);
       DocumentSnapshot memoDoc = await memoDocRef.get();
 
-      // Firestoreから既存の履歴データを取得
       if (memoDoc.exists && memoDoc['amounts'] != null) {
         amounts = Map<String, List<Map<String, dynamic>>>.from(
           memoDoc['amounts'].map(
-                (key, value) => MapEntry(
+            (key, value) => MapEntry(
               key,
-              List<Map<String, dynamic>>.from(value.map((entry) => Map<String, dynamic>.from(entry))),
+              List<Map<String, dynamic>>.from(
+                  value.map((entry) => Map<String, dynamic>.from(entry))),
             ),
           ),
         );
       }
 
-      // 各参加者の金額履歴を更新
       for (int i = 0; i < participants.length; i++) {
         String amountText = _amountControllers[i].text;
         double? newAmount = double.tryParse(amountText);
 
-        // 金額が入力されていない場合、スキップ
         if (newAmount == null || newAmount == 0) {
           continue;
         }
 
         String newMemo = _memoControllers[i].text;
+        double amountInJPY =
+            await _convertToJPY(newAmount, selectedCurrencies[i]);
 
         if (!amounts.containsKey(participants[i])) {
-          amounts[participants[i]] = []; // 初めての参加者はリストを初期化
+          amounts[participants[i]] = [];
         }
 
-        // 新しい支払いを履歴に追加
         amounts[participants[i]]!.add({
-          'amount': newAmount,
+          'amount': amountInJPY,
+          'originalAmount': newAmount,
+          'originalCurrency': selectedCurrencies,
           'memo': newMemo,
           'date': Timestamp.now(),
         });
 
-        // 入力フィールドをクリア
         _amountControllers[i].clear();
         _memoControllers[i].clear();
       }
 
-      // Firestoreに保存
       await memoDocRef.update({
         'amounts': amounts,
       });
@@ -131,6 +166,7 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
       MaterialPageRoute(
         builder: (BuildContext context) {
           return PaymentHistoryPage(
+            collectionName: widget.collectionName,
             amounts: amounts, // ここで既存の amounts を渡します
             travelId: widget.memoId, // memoId を渡す
           );
@@ -143,7 +179,8 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
     // 各参加者の合計支払額を計算
     Map<String, double> payMap = {
       for (var entry in amounts.entries)
-        entry.key: entry.value.fold(0.0, (sum, payment) => sum + (payment['amount'] as double))
+        entry.key: entry.value
+            .fold(0.0, (sum, payment) => sum + (payment['amount'] as double))
     };
 
     // 清算ロジックを適用
@@ -181,7 +218,8 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
       for (int i = 0; i < min(payPeople.length, getPeople.length); i++) {
         newPay[payPeople[i]] = newPay[payPeople[i]]! + payment;
         newPay[getPeople[i]] = newPay[getPeople[i]]! - payment;
-        conceqence.add('${payPeople[i]}が${getPeople[i]}に支払い：¥${payment.round()}');
+        conceqence
+            .add('${payPeople[i]}が${getPeople[i]}に支払い：¥${payment.round()}');
       }
 
       if (newPay.values.every((value) => (value).abs() < 1e-9)) {
@@ -190,11 +228,44 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
     }
   }
 
+  void _showMemoInputDialog(int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('${participants[index]}のメモ'),
+          content: TextField(
+            onChanged: (value) {
+              setState(() {
+                memoEntries[index] = value;
+              });
+            },
+            controller: TextEditingController(text: memoEntries[index]),
+            decoration: const InputDecoration(hintText: "メモを入力してください"),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('閉じる'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontFamily: 'Roboto',
+          ),
+        ),
         backgroundColor: Colors.blue.shade300,
         elevation: 0,
       ),
@@ -206,8 +277,8 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                "メンバー一覧",
-                style: TextStyle(fontSize: 30, color: Colors.blueGrey),
+                "メンバー",
+                style: TextStyle(fontSize: 30, fontFamily: "Roboto"),
               ),
               const Divider(thickness: 1.5, color: Colors.blueGrey),
               const SizedBox(height: 20),
@@ -215,7 +286,7 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
                 const Center(
                   child: Text(
                     "参加者がいません",
-                    style: TextStyle(color: Colors.red),
+                    style: TextStyle(color: Colors.red, fontFamily: "Roboto"),
                   ),
                 )
               else
@@ -228,7 +299,8 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
                         Expanded(
                           child: Text(
                             participants[index],
-                            style: const TextStyle(fontSize: 20, color: Colors.blueGrey),
+                            style: const TextStyle(
+                                fontSize: 20, fontFamily: "Roboto"),
                           ),
                         ),
                         Padding(
@@ -259,28 +331,31 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Container(
-                            width: 150,
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.blue.shade100,
-                                  blurRadius: 6,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: TextField(
-                              controller: _memoControllers[index],
-                              decoration: const InputDecoration(
-                                labelText: 'メモ',
-                                border: InputBorder.none,
-                              ),
-                            ),
-                          ),
+                          child: DropdownButton<String>(
+                              value: selectedCurrencies[index],
+                              items: currencies.map((String currency) {
+                                return DropdownMenuItem<String>(
+                                  value: currency,
+                                  child: Text(currency),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                if (newValue != null) {
+                                  setState(() {
+                                    selectedCurrencies[index] = (newValue);
+                                  });
+                                } else {
+                                  setState(() {
+                                    selectedCurrencies[index] = "JPY";
+                                  });
+                                }
+                              }),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.note_add),
+                          onPressed: () {
+                            _showMemoInputDialog(index); // メモ入力ダイアログを表示
+                          },
                         ),
                       ],
                     ),
@@ -298,9 +373,13 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 30),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 30),
                       ),
-                      child: const Text('保存'),
+                      child: const Text(
+                        '保存',
+                        style: TextStyle(fontFamily: "Roboto"),
+                      ),
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
@@ -311,9 +390,11 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 30),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 30),
                       ),
-                      child: const Text('履歴を見る'),
+                      child: const Text('履歴を見る',
+                          style: TextStyle(fontFamily: "Roboto")),
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
@@ -324,16 +405,21 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 30),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 30),
                       ),
-                      child: const Text('清算する'),
+                      child: const Text('清算する',
+                          style: TextStyle(fontFamily: "Roboto")),
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => PaymentSuggestionPage(memoId: widget.memoId)),
+                          MaterialPageRoute(
+                              builder: (context) => PaymentSuggestionPage(
+                                  collectionName: widget.collectionName,
+                                  memoId: widget.memoId)),
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -342,9 +428,27 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 30),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 30),
                       ),
-                      child: const Text('支払提案'),
+                      child: const Text('支払提案',
+                          style: TextStyle(fontFamily: "Roboto")),
+                    ),
+                    const SizedBox(height: 20),
+                    // 追加した「最新情報を取得」ボタン
+                    ElevatedButton(
+                      onPressed: _fetchMemoData,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue.shade300,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 30),
+                      ),
+                      child: const Text('最新情報を取得',
+                          style: TextStyle(fontFamily: "Roboto")),
                     ),
                   ],
                 ),
@@ -354,15 +458,21 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("清算結果:", style: TextStyle(fontSize: 20, color: Colors.blueGrey)),
+                    const Text("清算結果:",
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.blueGrey,
+                            fontFamily: "Roboto")),
                     const SizedBox(height: 10),
-                    ...settlementResults.map((result) => Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
-                        result,
-                        style: const TextStyle(color: Colors.blueGrey),
-                      ),
-                    )).toList(),
+                    ...settlementResults
+                        .map((result) => Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(
+                                result,
+                                style: const TextStyle(),
+                              ),
+                            ))
+                        .toList(),
                   ],
                 ),
             ],

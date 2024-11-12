@@ -3,8 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PaymentSuggestionPage extends StatefulWidget {
   final String memoId;
+  final String collectionName;
 
-  PaymentSuggestionPage({required this.memoId});
+  PaymentSuggestionPage({required this.memoId, required this.collectionName});
 
   @override
   _PaymentSuggestionPageState createState() => _PaymentSuggestionPageState();
@@ -25,7 +26,7 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
   Future<void> _fetchMemoData() async {
     try {
       DocumentSnapshot memoDoc = await FirebaseFirestore.instance
-          .collection('memo')
+          .collection(widget.collectionName)
           .doc(widget.memoId)
           .get();
 
@@ -125,7 +126,7 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
       _amountController.clear();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("有効な金額を入力してください")),
+        SnackBar(content: Text("有効な金額を入力してください", style: TextStyle(fontFamily: "Roboto"),)),
       );
     }
   }
@@ -134,7 +135,7 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('支払提案'),
+        title: Text("支払提案", style: TextStyle(fontFamily: 'Roboto',),),
         backgroundColor: Colors.blue.shade300,
         elevation: 0,
       ),
@@ -149,7 +150,7 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
             ),
             ElevatedButton(
               onPressed: _addAmount,
-              child: Text('金額を追加'),
+              child: Text('金額を追加', style: TextStyle(fontFamily: "Roboto")),
             ),
             Expanded(
               child: suggestionResults.isEmpty
