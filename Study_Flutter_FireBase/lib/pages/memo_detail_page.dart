@@ -266,7 +266,7 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
             fontFamily: 'Roboto',
           ),
         ),
-        backgroundColor: Colors.blue.shade300,
+        backgroundColor: const Color(0xFFE0ECF8),
         elevation: 0,
       ),
       body: Padding(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:study_flutter_firebase/pages/input_collection.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:study_flutter_firebase/pages/PrivacyPolicy.dart';
 import 'dart:html' as html;
 
 class IntroductionPage extends StatelessWidget {
@@ -13,6 +13,12 @@ class IntroductionPage extends StatelessWidget {
     );
   }
 
+  void _navigateToPrivacyPolicy(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PrivacyPolicyPage()),
+    );
+  }
   // GoogleフォームのURLを開く関数
   void _launchContactForm() {
     html.window.open(
@@ -26,7 +32,7 @@ class IntroductionPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("みんなで割り勘", style: TextStyle(fontFamily: "Roboto")),
-        backgroundColor: Colors.blue.shade300,
+        backgroundColor: const Color(0xFFE0ECF8),
         foregroundColor: Colors.black,
         elevation: 0,
       ),
@@ -71,11 +77,7 @@ class IntroductionPage extends StatelessWidget {
               const Divider(),
               const SizedBox(height: 20),
               TextButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('プライバシーポリシーはまだ実装されていません')),
-                  );
-                },
+                onPressed: () => _navigateToPrivacyPolicy(context),
                 child: const Text(
                   'プライバシーポリシー',
                   style: TextStyle(fontSize: 16, color: Colors.blueGrey),

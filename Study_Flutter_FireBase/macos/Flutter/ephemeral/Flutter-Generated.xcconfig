@@ -1,6 +1,6 @@
 // This is a generated file; do not edit or check into version control.
-FLUTTER_ROOT=C:\Users\mrmmm\Desktop\Flutterapp\flutter
-FLUTTER_APPLICATION_PATH=C:\Users\mrmmm\StudioProjects\Study_Flutter_FireBase
+FLUTTER_ROOT=/Users/takasesouta/Developer/flutter
+FLUTTER_APPLICATION_PATH=/Users/takasesouta/Developer/App_from_comeda/Study_Flutter_FireBase
 COCOAPODS_PARALLEL_CODE_SIGN=true
 FLUTTER_BUILD_DIR=build
 FLUTTER_BUILD_NAME=1.0.0
