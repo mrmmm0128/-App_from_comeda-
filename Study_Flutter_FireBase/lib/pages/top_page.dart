@@ -201,7 +201,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 );
               },
-              backgroundColor: Colors.blue.shade400,
+              backgroundColor: const Color(0xFF75A9D6),
               foregroundColor: Colors.white,
               label: const Text("グループ選択"),
               icon: const Icon(Icons.folder_open),
@@ -217,7 +217,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 );
               },
-              backgroundColor: Colors.blue.shade400,
+              backgroundColor: const Color(0xFF75A9D6),
               foregroundColor: Colors.white,
               label: const Text("メモ追加"),
               icon: const Icon(Icons.add),

@@ -378,11 +378,11 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
                       alignment: Alignment.center,
                       child: SizedBox(
                         width: MediaQuery.of(context).size.width *
-                            0.8, // 横幅を80%に設定
+                            0.4, // 横幅を80%に設定
                         child: ElevatedButton(
                           onPressed: saveData,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue.shade300,
+                            backgroundColor: const Color(0xFF75A9D6),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
@@ -400,11 +400,11 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
                     Align(
                       alignment: Alignment.center,
                       child: SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.8,
+                        width: MediaQuery.of(context).size.width * 0.4,
                         child: ElevatedButton(
                           onPressed: _showHistoryDialog,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue.shade300,
+                            backgroundColor: const Color(0xFF75A9D6),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
@@ -422,7 +422,7 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
                     Align(
                       alignment: Alignment.center,
                       child: SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.8,
+                        width: MediaQuery.of(context).size.width * 0.4,
                         child: ElevatedButton(
                           onPressed: () {
                             Navigator.push(
@@ -434,7 +434,7 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue.shade300,
+                            backgroundColor: const Color(0xFF75A9D6),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
@@ -452,11 +452,11 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
                     Align(
                       alignment: Alignment.center,
                       child: SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.8,
+                        width: MediaQuery.of(context).size.width * 0.4,
                         child: ElevatedButton(
                           onPressed: _fetchMemoData,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue.shade300,
+                            backgroundColor: const Color(0xFF75A9D6),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
@@ -475,11 +475,11 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
                     Align(
                       alignment: Alignment.center,
                       child: SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.8,
+                        width: MediaQuery.of(context).size.width * 0.4,
                         child: ElevatedButton(
                           onPressed: _settlePayments,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue.shade700,
+                            backgroundColor: const Color(0xFF75A9D6),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),

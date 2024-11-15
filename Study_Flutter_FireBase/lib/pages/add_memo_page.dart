@@ -153,7 +153,7 @@ class _AddMemoPageState extends State<AddMemoPage> {
                 child: ElevatedButton(
                   onPressed: _addParticipantField,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue.shade300,
+                    backgroundColor: const Color(0xFF75A9D6),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -196,7 +196,7 @@ class _AddMemoPageState extends State<AddMemoPage> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue.shade300,
+                    backgroundColor: const Color(0xFF75A9D6),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -204,7 +204,7 @@ class _AddMemoPageState extends State<AddMemoPage> {
                     padding: EdgeInsets.symmetric(vertical: 12, horizontal: 30),
                   ),
                   child:
-                      const Text("追加", style: TextStyle(fontFamily: "Roboto")),
+                      const Text("確定", style: TextStyle(fontFamily: "Roboto")),
                 ),
               ),
             ],

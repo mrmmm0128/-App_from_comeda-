@@ -118,7 +118,7 @@ class _CollectionInputPageState extends State<CollectionInputPage> {
               controller: _controller,
               decoration: InputDecoration(
                 labelText: 'グループ名',
-                labelStyle: TextStyle(color: Colors.blue.shade400),
+                labelStyle: TextStyle(color: Colors.blueGrey),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -131,7 +131,7 @@ class _CollectionInputPageState extends State<CollectionInputPage> {
             ElevatedButton(
               onPressed: () => _navigateToNextPage(_controller.text),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue.shade400,
+                backgroundColor: const Color(0xFF75A9D6),
                 foregroundColor: Colors.white,
                 padding:
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
@@ -153,7 +153,7 @@ class _CollectionInputPageState extends State<CollectionInputPage> {
               controller: _newGroupController,
               decoration: InputDecoration(
                 labelText: '新しいグループ名',
-                labelStyle: TextStyle(color: Colors.blue.shade400),
+                labelStyle: TextStyle(color: Colors.blueGrey),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -167,7 +167,7 @@ class _CollectionInputPageState extends State<CollectionInputPage> {
               onPressed: () =>
                   _createNewGroupAndNavigate(_newGroupController.text),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue.shade400,
+                backgroundColor: const Color(0xFF75A9D6),
                 foregroundColor: Colors.white,
                 padding:
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 24),

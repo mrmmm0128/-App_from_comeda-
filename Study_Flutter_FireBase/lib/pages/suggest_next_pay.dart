@@ -163,10 +163,19 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
               decoration: InputDecoration(labelText: '次の会計金額'),
               keyboardType: TextInputType.number,
             ),
+            const SizedBox(height: 40),
             ElevatedButton(
-              onPressed: _addAmount,
-              child: Text('金額を追加', style: TextStyle(fontFamily: "Roboto")),
-            ),
+                onPressed: _addAmount,
+                child: Text(
+                  '金額を追加',
+                  style: TextStyle(
+                    fontFamily: "Roboto",
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF75A9D6),
+                  foregroundColor: Colors.white,
+                )),
             Expanded(
               child: suggestionResults.isEmpty
                   ? Center(child: CircularProgressIndicator()) // データ取得中

@@ -4,7 +4,6 @@ import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:study_flutter_firebase/firebase_options.dart';
 import 'package:study_flutter_firebase/pages/Introduction.dart';
 import 'package:study_flutter_firebase/pages/memo_detail_page.dart';
-import 'dart:async';
 
 void main() async {
   setUrlStrategy(PathUrlStrategy());

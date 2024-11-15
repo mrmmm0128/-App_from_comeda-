@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:study_flutter_firebase/pages/input_collection.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:study_flutter_firebase/pages/explain.dart';
+import 'package:study_flutter_firebase/pages/privacypolicy.dart';
 import 'dart:html' as html;
 
 class IntroductionPage extends StatelessWidget {
@@ -10,6 +11,20 @@ class IntroductionPage extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const CollectionInputPage()),
+    );
+  }
+
+  void _navigateToExplain(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const Explain()),
+    );
+  }
+
+  void _navigateToPrivacyPolicy(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PrivacyPolicyPage()),
     );
   }
 
@@ -25,13 +40,10 @@ class IntroductionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "みんなで割り勘",
-          style: TextStyle(fontFamily: "Roboto", fontSize: 22),
-        ),
+        title: const Text("みんなで割り勘", style: TextStyle(fontFamily: "Roboto")),
         backgroundColor: const Color(0xFF75A9D6), //Appbarの色
         foregroundColor: Colors.white,
-        elevation: 4,
+        elevation: 0,
       ),
       body: Center(
         child: Padding(
@@ -48,27 +60,25 @@ class IntroductionPage extends StatelessWidget {
               const Text(
                 'みんなで割り勘へようこそ！',
                 style: TextStyle(
-                  fontSize: 26,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Roboto',
-                  color: Colors.blueGrey,
                 ),
-                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               const Text(
-                'グループを作って仲間との支払記録を共有しましょう！',
+                '始めるボタンを押してグループ名入力ページに進んでください。',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.blueGrey,
+                  fontFamily: 'Roboto',
                 ),
               ),
               const SizedBox(height: 40),
-              ElevatedButton.icon(
+              ElevatedButton(
                 onPressed: () => _navigateToCollectionInput(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue.shade400,
+                  backgroundColor: const Color(0xFF75A9D6),
                   foregroundColor: Colors.white,
                   padding:
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
@@ -76,56 +86,44 @@ class IntroductionPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                icon: const Icon(Icons.arrow_forward),
-                label: const Text('始める'),
+                child: const Text('始める'),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => _navigateToExplain(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF75A9D6),
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: const Text('使い方'),
+              ),
+              const SizedBox(height: 40),
               const Divider(),
               const SizedBox(height: 20),
-              // アプリの説明を追加
-              const Text(
-                '① 仲間とグループを作って旅行や行事を管理しましょう！\n'
-                '② 行事ごとに支払を記録しましょう！\n'
-                '③ 支払提案機能を用いて次の支払の分配をお願いしましょう！\n'
-                '④ 清算ボタンを押して、支払が少なかった人は多く支払った人にお金を渡しましょう！',
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 30),
               TextButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('プライバシーポリシーはまだ実装されていません')),
-                  );
-                },
+                onPressed: () => _navigateToPrivacyPolicy(context),
                 child: const Text(
                   'プライバシーポリシー',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.blueGrey,
-                    decoration: TextDecoration.underline,
-                  ),
+                  style: TextStyle(fontSize: 16, color: Colors.blueGrey),
                 ),
               ),
               TextButton(
                 onPressed: _launchContactForm,
                 child: const Text(
                   'お問い合わせ',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.blueGrey,
-                    decoration: TextDecoration.underline,
-                  ),
+                  style: TextStyle(fontSize: 16, color: Colors.blueGrey),
                 ),
               ),
             ],
           ),
         ),
       ),
-      backgroundColor: const Color(0xFFE0ECF8), // 背景色
+      backgroundColor: const Color(0xFFE0ECF8),
     );
   }
 }
