@@ -17,7 +17,8 @@ class _AddMemoPageState extends State<AddMemoPage> {
   ];
 
   Future<void> createMemo() async {
-    final memoCollection = FirebaseFirestore.instance.collection(widget.collectionName);
+    final memoCollection =
+        FirebaseFirestore.instance.collection(widget.collectionName);
     List<String> participants = participantControllers
         .map((c) => c.text)
         .where((text) => text.isNotEmpty)
@@ -46,9 +47,14 @@ class _AddMemoPageState extends State<AddMemoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("旅程追加", style: TextStyle(fontFamily: 'Roboto',),),
-        backgroundColor: Colors.blue.shade300,
-        foregroundColor: Colors.black,
+        title: const Text(
+          "メモ追加",
+          style: TextStyle(
+            fontFamily: 'Roboto',
+          ),
+        ),
+        backgroundColor: const Color(0xFF75A9D6), //Appbarの色
+        foregroundColor: Colors.white,
         elevation: 0,
       ),
       body: Center(
@@ -82,7 +88,7 @@ class _AddMemoPageState extends State<AddMemoPage> {
                 child: TextField(
                   controller: titleController,
                   decoration: const InputDecoration(
-                    hintText: "旅行のタイトルを入力",
+                    hintText: "メモのタイトルを入力",
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(vertical: 10),
                   ),
@@ -101,7 +107,8 @@ class _AddMemoPageState extends State<AddMemoPage> {
                 int index = entry.key;
                 TextEditingController controller = entry.value;
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 10, left: 20, right: 20),
+                  padding:
+                      const EdgeInsets.only(bottom: 10, left: 20, right: 20),
                   child: Row(
                     children: [
                       Expanded(
@@ -123,7 +130,8 @@ class _AddMemoPageState extends State<AddMemoPage> {
                             decoration: const InputDecoration(
                               hintText: "参加者の名前を入力",
                               border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(vertical: 10),
+                              contentPadding:
+                                  EdgeInsets.symmetric(vertical: 10),
                             ),
                           ),
                         ),
@@ -151,7 +159,8 @@ class _AddMemoPageState extends State<AddMemoPage> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-                  child: const Text("参加者を追加", style: TextStyle(fontFamily: "Roboto")),
+                  child: const Text("参加者を追加",
+                      style: TextStyle(fontFamily: "Roboto")),
                 ),
               ),
               const SizedBox(height: 40),
@@ -162,13 +171,18 @@ class _AddMemoPageState extends State<AddMemoPage> {
                   onPressed: () async {
                     if (titleController.text.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('タイトルを入力してください', style: TextStyle(fontFamily: "Roboto"))),
+                        const SnackBar(
+                            content: Text('タイトルを入力してください',
+                                style: TextStyle(fontFamily: "Roboto"))),
                       );
                       return;
                     }
-                    if (participantControllers.every((controller) => controller.text.isEmpty)) {
+                    if (participantControllers
+                        .every((controller) => controller.text.isEmpty)) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('少なくとも1人の参加者を入力してください', style: TextStyle(fontFamily: "Roboto"))),
+                        const SnackBar(
+                            content: Text('少なくとも1人の参加者を入力してください',
+                                style: TextStyle(fontFamily: "Roboto"))),
                       );
                       return;
                     }
@@ -176,7 +190,8 @@ class _AddMemoPageState extends State<AddMemoPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => MyHomePage(collectionName: widget.collectionName),
+                        builder: (context) =>
+                            MyHomePage(collectionName: widget.collectionName),
                       ),
                     );
                   },
@@ -188,14 +203,15 @@ class _AddMemoPageState extends State<AddMemoPage> {
                     ),
                     padding: EdgeInsets.symmetric(vertical: 12, horizontal: 30),
                   ),
-                  child: const Text("追加", style: TextStyle(fontFamily: "Roboto")),
+                  child:
+                      const Text("追加", style: TextStyle(fontFamily: "Roboto")),
                 ),
               ),
             ],
           ),
         ),
       ),
-      backgroundColor: Colors.blue.shade50,
+      backgroundColor: const Color(0xFFE0ECF8), // 背景色 // 背景色//Appbarの色
     );
   }
 }

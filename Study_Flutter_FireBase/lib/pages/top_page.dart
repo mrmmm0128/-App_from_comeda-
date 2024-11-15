@@ -35,7 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _getLink(String memoId, String collectionName) async {
     // メモIDをURLエンコードしてリンクを生成
-    String link = "https://waritate.netlify.app/travel/$collectionName/$memoId";
+    String link = "https://groupwarikan.com/travel/$collectionName/$memoId";
 
     // クリップボードにリンクをコピー
     Clipboard.setData(ClipboardData(text: link)).then((_) {
@@ -49,34 +49,15 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF3A7BD5), Color(0xFF00D2FF)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+        title: Text(
+          "みんなで割り勘",
+          style: TextStyle(
+            fontFamily: 'Roboto',
           ),
         ),
-        title: Center(
-          child: Text(
-            "みんなで割り勘",
-            style: TextStyle(
-              fontFamily: 'Roboto',
-              fontWeight: FontWeight.bold,
-              fontSize: 24,
-              color: Colors.white,
-              shadows: [
-                Shadow(
-                  color: Colors.black.withOpacity(0.2),
-                  offset: Offset(2, 2),
-                  blurRadius: 4,
-                ),
-              ],
-            ),
-          ),
-        ),
+        backgroundColor: const Color(0xFF75A9D6), //Appbarの色
+        foregroundColor: Colors.white,
+        elevation: 0,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: memoCollection.snapshots(),
@@ -110,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: Card(
-                  elevation: 4,
+                  elevation: 6,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -118,7 +99,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: Text(
                       fetchMemo.title,
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 18),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Colors.black87,
+                      ),
                     ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete),
-                          color: Colors.red,
+                          color: Colors.redAccent,
                           onPressed: () {
                             showDialog(
                               context: context,
@@ -202,39 +186,46 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         },
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 35.0), // 左側に余白を追加
-            child: FloatingActionButton(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            FloatingActionButton.extended(
               onPressed: () {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const CollectionInputPage()));
-              },
-              backgroundColor: Colors.blueAccent,
-              tooltip: 'Input Collection',
-              child: const Icon(Icons.folder_open),
-            ),
-          ),
-          FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => AddMemoPage(
-                            collectionName: widget.collectionName,
-                          )));
-            },
-            backgroundColor: Colors.blueAccent,
-            tooltip: 'Add Memo',
-            child: const Icon(Icons.add),
-          ),
-        ],
+                    builder: (context) => const CollectionInputPage(),
+                  ),
+                );
+              },
+              backgroundColor: Colors.blue.shade400,
+              foregroundColor: Colors.white,
+              label: const Text("グループ選択"),
+              icon: const Icon(Icons.folder_open),
+            ),
+            FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddMemoPage(
+                      collectionName: widget.collectionName,
+                    ),
+                  ),
+                );
+              },
+              backgroundColor: Colors.blue.shade400,
+              foregroundColor: Colors.white,
+              label: const Text("メモ追加"),
+              icon: const Icon(Icons.add),
+            ),
+          ],
+        ),
       ),
+      backgroundColor: const Color(0xFFE0ECF8), // 背景色,
     );
   }
 }

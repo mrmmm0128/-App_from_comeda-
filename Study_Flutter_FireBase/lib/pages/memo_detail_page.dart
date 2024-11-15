@@ -104,19 +104,6 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
       DocumentReference memoDocRef = FirebaseFirestore.instance
           .collection(widget.collectionName)
           .doc(widget.memoId);
-      DocumentSnapshot memoDoc = await memoDocRef.get();
-
-      if (memoDoc.exists && memoDoc['amounts'] != null) {
-        amounts = Map<String, List<Map<String, dynamic>>>.from(
-          memoDoc['amounts'].map(
-            (key, value) => MapEntry(
-              key,
-              List<Map<String, dynamic>>.from(
-                  value.map((entry) => Map<String, dynamic>.from(entry))),
-            ),
-          ),
-        );
-      }
 
       for (int i = 0; i < participants.length; i++) {
         String amountText = _amountControllers[i].text;
@@ -126,7 +113,7 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
           continue;
         }
 
-        String newMemo = _memoControllers[i].text;
+        String newMemo = memoEntries[i];
         double amountInJPY =
             await _convertToJPY(newAmount, selectedCurrencies[i]);
 
@@ -137,13 +124,12 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
         amounts[participants[i]]!.add({
           'amount': amountInJPY,
           'originalAmount': newAmount,
-          'originalCurrency': selectedCurrencies,
+          'originalCurrency': selectedCurrencies[i],
           'memo': newMemo,
           'date': Timestamp.now(),
         });
 
         _amountControllers[i].clear();
-        _memoControllers[i].clear();
       }
 
       await memoDocRef.update({
@@ -175,6 +161,30 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
     );
   }
 
+  void _showSettlementResultsDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("清算結果"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: settlementResults.map((result) => Text(result)).toList(),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('閉じる'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _settlePayments() {
     // 各参加者の合計支払額を計算
     Map<String, double> payMap = {
@@ -187,6 +197,9 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
     setState(() {
       settlementResults = seisan(payMap);
     });
+
+    // 清算結果をダイアログで表示
+    _showSettlementResultsDialog();
   }
 
   List<String> seisan(Map<String, double> payMap) {
@@ -266,7 +279,8 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
             fontFamily: 'Roboto',
           ),
         ),
-        backgroundColor: Colors.blue.shade300,
+        backgroundColor: const Color(0xFF75A9D6), // Appbar color
+        foregroundColor: Colors.white,
         elevation: 0,
       ),
       body: Padding(
@@ -340,21 +354,16 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
                                 );
                               }).toList(),
                               onChanged: (String? newValue) {
-                                if (newValue != null) {
-                                  setState(() {
-                                    selectedCurrencies[index] = (newValue);
-                                  });
-                                } else {
-                                  setState(() {
-                                    selectedCurrencies[index] = "JPY";
-                                  });
-                                }
+                                setState(() {
+                                  selectedCurrencies[index] = newValue ?? "JPY";
+                                });
                               }),
                         ),
                         IconButton(
                           icon: const Icon(Icons.note_add),
                           onPressed: () {
-                            _showMemoInputDialog(index); // メモ入力ダイアログを表示
+                            _showMemoInputDialog(
+                                index); // Show memo input dialog
                           },
                         ),
                       ],
@@ -365,121 +374,136 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
               Center(
                 child: Column(
                   children: [
-                    ElevatedButton(
-                      onPressed: saveData,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue.shade300,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                    Align(
+                      alignment: Alignment.center,
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width *
+                            0.8, // 横幅を80%に設定
+                        child: ElevatedButton(
+                          onPressed: saveData,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade300,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          child: const Text(
+                            '保存',
+                            style: TextStyle(fontFamily: "Roboto"),
+                          ),
                         ),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 30),
-                      ),
-                      child: const Text(
-                        '保存',
-                        style: TextStyle(fontFamily: "Roboto"),
                       ),
                     ),
                     const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: _showHistoryDialog,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue.shade300,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                    Align(
+                      alignment: Alignment.center,
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        child: ElevatedButton(
+                          onPressed: _showHistoryDialog,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade300,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          child: const Text(
+                            '履歴を見る',
+                            style: TextStyle(fontFamily: "Roboto"),
+                          ),
                         ),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 30),
                       ),
-                      child: const Text('履歴を見る',
-                          style: TextStyle(fontFamily: "Roboto")),
                     ),
                     const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: _settlePayments,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue.shade300,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                    Align(
+                      alignment: Alignment.center,
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => PaymentSuggestionPage(
+                                      collectionName: widget.collectionName,
+                                      memoId: widget.memoId)),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade300,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          child: const Text(
+                            '支払提案',
+                            style: TextStyle(fontFamily: "Roboto"),
+                          ),
                         ),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 30),
                       ),
-                      child: const Text('清算する',
-                          style: TextStyle(fontFamily: "Roboto")),
                     ),
                     const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => PaymentSuggestionPage(
-                                  collectionName: widget.collectionName,
-                                  memoId: widget.memoId)),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue.shade300,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                    Align(
+                      alignment: Alignment.center,
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        child: ElevatedButton(
+                          onPressed: _fetchMemoData,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade300,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          child: const Text(
+                            '最新情報を取得',
+                            style: TextStyle(fontFamily: "Roboto"),
+                          ),
                         ),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 30),
                       ),
-                      child: const Text('支払提案',
-                          style: TextStyle(fontFamily: "Roboto")),
                     ),
                     const SizedBox(height: 20),
-                    // 追加した「最新情報を取得」ボタン
-                    ElevatedButton(
-                      onPressed: _fetchMemoData,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue.shade300,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                    // 清算ボタンを一番下に配置し、目立たせる
+                    Align(
+                      alignment: Alignment.center,
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        child: ElevatedButton(
+                          onPressed: _settlePayments,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade700,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                          ),
+                          child: const Text(
+                            '清算する',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontFamily: "Roboto",
+                                fontWeight: FontWeight.bold),
+                          ),
                         ),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 30),
                       ),
-                      child: const Text('最新情報を取得',
-                          style: TextStyle(fontFamily: "Roboto")),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
-              if (settlementResults.isNotEmpty)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text("清算結果:",
-                        style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.blueGrey,
-                            fontFamily: "Roboto")),
-                    const SizedBox(height: 10),
-                    ...settlementResults
-                        .map((result) => Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Text(
-                                result,
-                                style: const TextStyle(),
-                              ),
-                            ))
-                        .toList(),
-                  ],
-                ),
             ],
           ),
         ),
       ),
-      backgroundColor: Colors.blue.shade50,
+      backgroundColor: const Color(0xFFE0ECF8), // Background color
     );
   }
 }

@@ -89,49 +89,101 @@ class _CollectionInputPageState extends State<CollectionInputPage> {
           "グループ名入力",
           style: TextStyle(
             fontFamily: 'Roboto',
+            fontSize: 22,
           ),
         ),
-        backgroundColor: Colors.blue.shade300,
-        foregroundColor: Colors.black,
-        elevation: 0,
+        backgroundColor: const Color(0xFF75A9D6), //Appbarの色,
+        foregroundColor: Colors.white,
+        elevation: 4,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Center(
+              child: Text(
+                'グループを作って仲間との支払記録を共有しましょう!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Roboto',
+                  color: Colors.blueGrey,
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
             TextField(
               controller: _controller,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'グループ名',
-                border: OutlineInputBorder(),
+                labelStyle: TextStyle(color: Colors.blue.shade400),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue.shade400),
+                ),
               ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => _navigateToNextPage(_controller.text),
-              child: const Text('既存グループに移動',
-                  style: TextStyle(fontFamily: "Roboto")),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue.shade400,
+                foregroundColor: Colors.white,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              child: const Text(
+                '既存グループに移動',
+                style: TextStyle(fontFamily: "Roboto", fontSize: 16),
+              ),
             ),
-            const Divider(height: 40),
+            const Divider(
+              height: 40,
+              color: Colors.blueGrey,
+              thickness: 1.0,
+            ),
             TextField(
               controller: _newGroupController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: '新しいグループ名',
-                border: OutlineInputBorder(),
+                labelStyle: TextStyle(color: Colors.blue.shade400),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue.shade400),
+                ),
               ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () =>
                   _createNewGroupAndNavigate(_newGroupController.text),
-              child: const Text('新しいグループを作成',
-                  style: TextStyle(fontFamily: "Roboto")),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue.shade400,
+                foregroundColor: Colors.white,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              child: const Text(
+                '新しいグループを作成',
+                style: TextStyle(fontFamily: "Roboto", fontSize: 16),
+              ),
             ),
           ],
         ),
       ),
-      backgroundColor: Colors.blue.shade50,
+      backgroundColor: const Color(0xFFE0ECF8), // 背景色,
     );
   }
 }

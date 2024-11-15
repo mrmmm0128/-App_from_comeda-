@@ -14,7 +14,8 @@ class PaymentSuggestionPage extends StatefulWidget {
 class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
   Map<String, List<Map<String, dynamic>>> amounts = {}; // 支払履歴データ
   List<String> suggestionResults = []; // 支払提案結果リスト
-  final TextEditingController _amountController = TextEditingController(); // 次の会計金額入力用コントローラ
+  final TextEditingController _amountController =
+      TextEditingController(); // 次の会計金額入力用コントローラ
 
   @override
   void initState() {
@@ -35,10 +36,12 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
           amounts = Map<String, List<Map<String, dynamic>>>.from(
             memoDoc['amounts'].map(
                   (key, value) => MapEntry(
-                key,
-                List<Map<String, dynamic>>.from(value.map((entry) => Map<String, dynamic>.from(entry))),
-              ),
-            ) ?? {},
+                    key,
+                    List<Map<String, dynamic>>.from(
+                        value.map((entry) => Map<String, dynamic>.from(entry))),
+                  ),
+                ) ??
+                {},
           );
         });
         _generatePaymentSuggestion(); // 取得後に支払提案を生成
@@ -60,7 +63,8 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
     // 各参加者の支払合計を計算
     Map<String, double> payMap = {
       for (var entry in amounts.entries)
-        entry.key: entry.value.fold(0.0, (sum, payment) => sum + (payment['amount'] as double))
+        entry.key: entry.value
+            .fold(0.0, (sum, payment) => sum + (payment['amount'] as double))
     };
 
     // 未払いの金額（次の会計）を取得
@@ -69,7 +73,8 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
     // 未払い金額がある場合に支払提案を生成
     if (amountToPay > 0) {
       // 現在の支払合計
-      double totalPaidSoFar = payMap.values.fold(0.0, (sum, paid) => sum + paid);
+      double totalPaidSoFar =
+          payMap.values.fold(0.0, (sum, paid) => sum + paid);
 
       // 全体の支払総額と平均支払額を計算
       double totalAmount = totalPaidSoFar + amountToPay;
@@ -98,7 +103,7 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
         if (amountToContribute > 0) {
           suggestions.add('$participant は ¥${amountToContribute.round()} 支払う');
           remainingAmount -= amountToContribute;
-          payMap[participant] = personPaid + amountToContribute;  // 支払額を更新
+          payMap[participant] = personPaid + amountToContribute; // 支払額を更新
         }
 
         // 残り金額がなくなれば終了
@@ -126,7 +131,11 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
       _amountController.clear();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("有効な金額を入力してください", style: TextStyle(fontFamily: "Roboto"),)),
+        SnackBar(
+            content: Text(
+          "有効な金額を入力してください",
+          style: TextStyle(fontFamily: "Roboto"),
+        )),
       );
     }
   }
@@ -135,8 +144,14 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("支払提案", style: TextStyle(fontFamily: 'Roboto',),),
-        backgroundColor: Colors.blue.shade300,
+        title: Text(
+          "支払提案",
+          style: TextStyle(
+            fontFamily: 'Roboto',
+          ),
+        ),
+        backgroundColor: const Color(0xFF75A9D6), //Appbarの色
+        foregroundColor: Colors.white,
         elevation: 0,
       ),
       body: Padding(
@@ -156,18 +171,18 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
               child: suggestionResults.isEmpty
                   ? Center(child: CircularProgressIndicator()) // データ取得中
                   : ListView.builder(
-                itemCount: suggestionResults.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(suggestionResults[index]),
-                  );
-                },
-              ),
+                      itemCount: suggestionResults.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(suggestionResults[index]),
+                        );
+                      },
+                    ),
             ),
           ],
         ),
       ),
-      backgroundColor: Colors.blue.shade50,
+      backgroundColor: const Color(0xFFE0ECF8), // 背景色
     );
   }
 }

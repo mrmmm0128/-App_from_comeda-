@@ -25,10 +25,13 @@ class IntroductionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("みんなで割り勘", style: TextStyle(fontFamily: "Roboto")),
-        backgroundColor: Colors.blue.shade300,
-        foregroundColor: Colors.black,
-        elevation: 0,
+        title: const Text(
+          "みんなで割り勘",
+          style: TextStyle(fontFamily: "Roboto", fontSize: 22),
+        ),
+        backgroundColor: const Color(0xFF75A9D6), //Appbarの色
+        foregroundColor: Colors.white,
+        elevation: 4,
       ),
       body: Center(
         child: Padding(
@@ -36,28 +39,36 @@ class IntroductionPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                'みんなで割り勘へようこそ！',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Roboto',
-                ),
+              Icon(
+                Icons.group,
+                size: 80,
+                color: Colors.blue.shade300,
               ),
               const SizedBox(height: 20),
               const Text(
-                '始めるボタンを押してグループ名入力ページに進んでください。',
+                'みんなで割り勘へようこそ！',
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Roboto',
+                  color: Colors.blueGrey,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'グループを作って仲間との支払記録を共有しましょう！',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
-                  fontFamily: 'Roboto',
+                  color: Colors.blueGrey,
                 ),
               ),
               const SizedBox(height: 40),
-              ElevatedButton(
+              ElevatedButton.icon(
                 onPressed: () => _navigateToCollectionInput(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue.shade300,
+                  backgroundColor: Colors.blue.shade400,
                   foregroundColor: Colors.white,
                   padding:
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
@@ -65,11 +76,25 @@ class IntroductionPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                child: const Text('始める'),
+                icon: const Icon(Icons.arrow_forward),
+                label: const Text('始める'),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 30),
               const Divider(),
               const SizedBox(height: 20),
+              // アプリの説明を追加
+              const Text(
+                '① 仲間とグループを作って旅行や行事を管理しましょう！\n'
+                '② 行事ごとに支払を記録しましょう！\n'
+                '③ 支払提案機能を用いて次の支払の分配をお願いしましょう！\n'
+                '④ 清算ボタンを押して、支払が少なかった人は多く支払った人にお金を渡しましょう！',
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 30),
               TextButton(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -78,21 +103,29 @@ class IntroductionPage extends StatelessWidget {
                 },
                 child: const Text(
                   'プライバシーポリシー',
-                  style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.blueGrey,
+                    decoration: TextDecoration.underline,
+                  ),
                 ),
               ),
               TextButton(
                 onPressed: _launchContactForm,
                 child: const Text(
                   'お問い合わせ',
-                  style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.blueGrey,
+                    decoration: TextDecoration.underline,
+                  ),
                 ),
               ),
             ],
           ),
         ),
       ),
-      backgroundColor: Colors.blue.shade50,
+      backgroundColor: const Color(0xFFE0ECF8), // 背景色
     );
   }
 }
