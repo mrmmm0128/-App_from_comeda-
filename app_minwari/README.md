@@ -1,16 +1,19 @@
-# study_flutter_firebase
+# みんなで割り勘
 
-A new Flutter project.
+旅行や遊び、飲み会の場でお金のことを気にせず家族友人との時間を過ごして欲しいという思いから開発しました。
 
-## Getting Started
+## 大学生が開発したアプリ
 
-This project is a starting point for a Flutter application.
+このアプリは大学生二人が約１ヶ月で作成しました。
 
-A few resources to get you started if this is your first Flutter project:
+開発言語：dart
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+使用したフレームワーク：Flutter
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+使用したデータベース：Firestore 
+
+開発理由：このアプリを広めて得た収益で南米に卒業旅行に行くため
+
+参考にしたアプリ：Walica(Webサイト), grouppay(ネイティブアプリ)
+
+ウェブサイトのリンク： [みんなで割り勘](https://groupwarikan.com/)
