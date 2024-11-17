@@ -56,6 +56,12 @@
       "languageVersion": "2.18"
     },
     {
+      "name": "crypto",
+      "rootUri": "file:///C:/Users/mrmmm/AppData/Local/Pub/Cache/hosted/pub.dev/crypto-3.0.6",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
       "name": "cupertino_icons",
       "rootUri": "file:///C:/Users/mrmmm/AppData/Local/Pub/Cache/hosted/pub.dev/cupertino_icons-1.0.8",
       "packageUri": "lib/",
@@ -302,7 +308,7 @@
       "languageVersion": "3.5"
     }
   ],
-  "generated": "2024-11-15T08:14:10.569887Z",
+  "generated": "2024-11-16T01:03:34.988165Z",
   "generator": "pub",
   "generatorVersion": "3.5.3",
   "flutterRoot": "file:///C:/Users/mrmmm/Desktop/Flutterapp/flutter",

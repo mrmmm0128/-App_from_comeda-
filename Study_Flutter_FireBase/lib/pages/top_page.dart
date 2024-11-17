@@ -6,6 +6,10 @@ import 'package:study_flutter_firebase/model/memo.dart';
 import 'package:study_flutter_firebase/pages/add_memo_page.dart';
 import 'package:study_flutter_firebase/pages/memo_detail_page.dart';
 import 'package:study_flutter_firebase/pages/input_collection.dart';
+import 'dart:html' as html;
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
+import 'package:study_flutter_firebase/pages/explain.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.collectionName});
@@ -24,6 +28,13 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     memoCollection =
         FirebaseFirestore.instance.collection(widget.collectionName);
+  }
+
+  void _navigateToExplain(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const Explain()),
+    );
   }
 
   void _deleteMemo(String id) async {
@@ -45,6 +56,27 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _navigateToCollectionInput(BuildContext context) async {
+    String deviceId = await getDeviceInfo();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => CollectionInputPage(
+                deviceId: deviceId,
+              )),
+    );
+  }
+
+  String getDeviceInfo() {
+    // ブラウザのユーザーエージェントを取得
+    String userAgent = html.window.navigator.userAgent;
+    final bytes = utf8.encode(userAgent);
+    final hash = sha256.convert(bytes); // SHA256でハッシュ化
+    return hash.toString(); // 安全なドキュメントID
+
+    // 必要に応じて、ユーザーエージェントからデバイスやブラウザ情報を抽出
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,6 +90,12 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: const Color(0xFF75A9D6), //Appbarの色
         foregroundColor: Colors.white,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline), // ボタンのアイコン
+            onPressed: () => _navigateToExplain(context), // ページ遷移
+          ),
+        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: memoCollection.snapshots(),
@@ -193,14 +231,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             FloatingActionButton.extended(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CollectionInputPage(),
-                  ),
-                );
-              },
+              onPressed: () => _navigateToCollectionInput(context),
               backgroundColor: const Color(0xFF75A9D6),
               foregroundColor: Colors.white,
               label: const Text("グループ選択"),

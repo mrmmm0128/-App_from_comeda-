@@ -6,6 +6,7 @@ import 'package:study_flutter_firebase/pages/show_history_page.dart';
 import 'package:study_flutter_firebase/pages/suggest_next_pay.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:study_flutter_firebase/pages/explain.dart';
 
 class MemoDetailPage extends StatefulWidget {
   const MemoDetailPage(
@@ -29,11 +30,19 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
   List<String?> selectedCurrencies = [];
   final String apiKey = 'YOUR_API_KEY'; // APIキーを入れてください
   List<String> memoEntries = List.filled(100, ""); // メモの内容を保持するリスト
+  List<String> selectedParticipants = []; // 選択された参加者のリスト
 
   @override
   void initState() {
     super.initState();
     _fetchMemoData(); // データを取得
+  }
+
+  void _navigateToExplain(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const Explain()),
+    );
   }
 
   Future<void> _fetchMemoData() async {
@@ -282,6 +291,12 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
         backgroundColor: const Color(0xFF75A9D6), // Appbar color
         foregroundColor: Colors.white,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline), // ボタンのアイコン
+            onPressed: () => _navigateToExplain(context), // ページ遷移
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -295,6 +310,34 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
                 style: TextStyle(fontSize: 30, fontFamily: "Roboto"),
               ),
               const Divider(thickness: 1.5, color: Colors.blueGrey),
+              // 支払金額の入力欄の上に参加者チェックボックスを追加
+              const Text(
+                "参加者を選択",
+                style: TextStyle(fontSize: 20, fontFamily: "Roboto"),
+              ),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8.0, // 横方向の間隔
+                runSpacing: 8.0, // 縦方向の間隔
+                children: List.generate(participants.length, (index) {
+                  return FilterChip(
+                    label: Text(participants[index]),
+                    selected:
+                        selectedParticipants.contains(participants[index]),
+                    onSelected: (bool isSelected) {
+                      setState(() {
+                        if (isSelected) {
+                          selectedParticipants.add(participants[index]);
+                        } else {
+                          selectedParticipants.remove(participants[index]);
+                        }
+                      });
+                    },
+                    selectedColor: Colors.blue.shade100,
+                    checkmarkColor: Colors.blue,
+                  );
+                }),
+              ),
               const SizedBox(height: 20),
               if (participants.isEmpty)
                 const Center(

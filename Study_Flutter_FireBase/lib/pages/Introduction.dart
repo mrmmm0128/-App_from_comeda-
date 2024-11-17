@@ -3,14 +3,20 @@ import 'package:study_flutter_firebase/pages/input_collection.dart';
 import 'package:study_flutter_firebase/pages/explain.dart';
 import 'package:study_flutter_firebase/pages/privacypolicy.dart';
 import 'dart:html' as html;
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 
 class IntroductionPage extends StatelessWidget {
   const IntroductionPage({super.key});
 
-  void _navigateToCollectionInput(BuildContext context) {
+  void _navigateToCollectionInput(BuildContext context) async {
+    String deviceId = await getDeviceInfo();
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const CollectionInputPage()),
+      MaterialPageRoute(
+          builder: (context) => CollectionInputPage(
+                deviceId: deviceId,
+              )),
     );
   }
 
@@ -34,6 +40,16 @@ class IntroductionPage extends StatelessWidget {
       'https://docs.google.com/forms/d/e/1FAIpQLSfHpmSHm5SBAARgemK39rfeWldmxmLPmfFU0BM1uuUXWYX3Hw/viewform?usp=sf_link',
       '_blank',
     );
+  }
+
+  String getDeviceInfo() {
+    // ブラウザのユーザーエージェントを取得
+    String userAgent = html.window.navigator.userAgent;
+    final bytes = utf8.encode(userAgent);
+    final hash = sha256.convert(bytes); // SHA256でハッシュ化
+    return hash.toString(); // 安全なドキュメントID
+
+    // 必要に応じて、ユーザーエージェントからデバイスやブラウザ情報を抽出
   }
 
   @override

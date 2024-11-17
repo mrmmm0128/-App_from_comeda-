@@ -4,7 +4,10 @@ import 'package:study_flutter_firebase/pages/add_memo_page.dart';
 import 'package:study_flutter_firebase/pages/top_page.dart';
 
 class CollectionInputPage extends StatefulWidget {
-  const CollectionInputPage({super.key});
+  final String deviceId;
+
+  // コンストラクタで deviceId を受け取るように修正
+  const CollectionInputPage({super.key, required this.deviceId});
 
   @override
   _CollectionInputPageState createState() => _CollectionInputPageState();
@@ -33,6 +36,7 @@ class _CollectionInputPageState extends State<CollectionInputPage> {
       bool groupExists = await _checkIfGroupExists(collectionName);
 
       if (groupExists) {
+        saveGroup(widget.deviceId, collectionName);
         // グループが存在すればページ遷移
         Navigator.push(
           context,
@@ -60,6 +64,7 @@ class _CollectionInputPageState extends State<CollectionInputPage> {
       bool groupExists = await _checkIfGroupExists(groupName);
 
       if (!groupExists) {
+        saveGroup(widget.deviceId, groupName);
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -81,6 +86,38 @@ class _CollectionInputPageState extends State<CollectionInputPage> {
     }
   }
 
+  Future<void> saveGroup(String deviceId, String groupName) async {
+    final deviceRef =
+        FirebaseFirestore.instance.collection('devices').doc(deviceId);
+
+    final doc = await deviceRef.get();
+
+    if (doc.exists) {
+      // 既存のグループリストに追加
+      final groups = List<String>.from(doc['groups'] ?? []);
+      if (!groups.contains(groupName)) {
+        groups.add(groupName);
+        await deviceRef.update({'groups': groups});
+      }
+    } else {
+      // 新規デバイスの場合
+      await deviceRef.set({
+        'groups': [groupName]
+      });
+    }
+  }
+
+  Future<List<String>> getGroups(String deviceId) async {
+    final doc = await FirebaseFirestore.instance
+        .collection('devices')
+        .doc(deviceId)
+        .get();
+    if (doc.exists) {
+      return List<String>.from(doc['groups'] ?? []);
+    }
+    return [];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,7 +129,7 @@ class _CollectionInputPageState extends State<CollectionInputPage> {
             fontSize: 22,
           ),
         ),
-        backgroundColor: const Color(0xFF75A9D6), //Appbarの色,
+        backgroundColor: const Color(0xFF75A9D6), // AppBarの色
         foregroundColor: Colors.white,
         elevation: 4,
       ),
@@ -114,6 +151,7 @@ class _CollectionInputPageState extends State<CollectionInputPage> {
               ),
             ),
             const SizedBox(height: 30),
+            // 既存グループの検索フィールド
             TextField(
               controller: _controller,
               decoration: InputDecoration(
@@ -149,6 +187,7 @@ class _CollectionInputPageState extends State<CollectionInputPage> {
               color: Colors.blueGrey,
               thickness: 1.0,
             ),
+            // 新しいグループ名の入力フィールド
             TextField(
               controller: _newGroupController,
               decoration: InputDecoration(
@@ -180,10 +219,65 @@ class _CollectionInputPageState extends State<CollectionInputPage> {
                 style: TextStyle(fontFamily: "Roboto", fontSize: 16),
               ),
             ),
+            const Divider(
+              height: 40,
+              color: Colors.blueGrey,
+              thickness: 1.0,
+            ),
+            // グループリストを表示するFutureBuilder
+            FutureBuilder<List<String>>(
+              future: getGroups(widget.deviceId), // getGroups関数を呼び出し
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                }
+                if (snapshot.hasError) {
+                  return Text('エラーが発生しました: ${snapshot.error}');
+                }
+                final groups = snapshot.data ?? [];
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: groups.length,
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                        onTap: () {
+                          // タップされた時に画面遷移を行う
+                          _navigateToNextPage(groups[index]);
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 8.0), // 上下に少しスペース
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF75A9D6), // ボタンと同じ色に統一
+                            borderRadius:
+                                BorderRadius.circular(20), // ボタンの角を丸くする
+                          ),
+                          child: ListTile(
+                            title: Text(
+                              groups[index],
+                              style: const TextStyle(
+                                color: Colors.white, // 文字色を白に設定
+                                fontSize: 16,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 24), // パディング
+                            leading: const Icon(
+                              Icons.group,
+                              color: Colors.white, // アイコンの色も白
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+            )
           ],
         ),
       ),
-      backgroundColor: const Color(0xFFE0ECF8), // 背景色,
+      backgroundColor: const Color(0xFFE0ECF8), // 背景色
     );
   }
 }
