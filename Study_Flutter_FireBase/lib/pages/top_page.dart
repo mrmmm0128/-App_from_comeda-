@@ -7,8 +7,6 @@ import 'package:study_flutter_firebase/pages/add_memo_page.dart';
 import 'package:study_flutter_firebase/pages/memo_detail_page.dart';
 import 'package:study_flutter_firebase/pages/input_collection.dart';
 import 'dart:html' as html;
-import 'dart:convert';
-import 'package:crypto/crypto.dart';
 import 'package:study_flutter_firebase/pages/explain.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -57,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _navigateToCollectionInput(BuildContext context) async {
-    String deviceId = await getDeviceInfo();
+    String deviceId = await getDeviceUUID();
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -67,14 +65,14 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  String getDeviceInfo() {
-    // ブラウザのユーザーエージェントを取得
-    String userAgent = html.window.navigator.userAgent;
-    final bytes = utf8.encode(userAgent);
-    final hash = sha256.convert(bytes); // SHA256でハッシュ化
-    return hash.toString(); // 安全なドキュメントID
-
-    // 必要に応じて、ユーザーエージェントからデバイスやブラウザ情報を抽出
+  String getDeviceUUID() {
+    final storage = html.window.localStorage;
+    String? uuid = storage['deviceUUID'];
+    if (uuid == null) {
+      uuid = DateTime.now().millisecondsSinceEpoch.toString();
+      storage['deviceUUID'] = uuid; // 保存
+    }
+    return uuid;
   }
 
   @override

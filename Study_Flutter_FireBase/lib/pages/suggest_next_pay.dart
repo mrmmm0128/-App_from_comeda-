@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class PaymentSuggestionPage extends StatefulWidget {
   final String memoId;
@@ -14,12 +16,181 @@ class PaymentSuggestionPage extends StatefulWidget {
 class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
   Map<String, List<Map<String, dynamic>>> amounts = {}; // 支払履歴データ
   List<String> suggestionResults = []; // 支払提案結果リスト
+  double? rate;
+  List<String> currencies = [
+    'USD',
+    'AED',
+    'AFN',
+    'ALL',
+    'AMD',
+    'ANG',
+    'AOA',
+    'ARS',
+    'AUD',
+    'AWG',
+    'AZN',
+    'BAM',
+    'BBD',
+    'BDT',
+    'BGN',
+    'BHD',
+    'BIF',
+    'BMD',
+    'BND',
+    'BOB',
+    'BRL',
+    'BSD',
+    'BTN',
+    'BWP',
+    'BYN',
+    'BZD',
+    'CAD',
+    'CDF',
+    'CHF',
+    'CLP',
+    'CNY',
+    'COP',
+    'CRC',
+    'CUP',
+    'CVE',
+    'CZK',
+    'DJF',
+    'DKK',
+    'DOP',
+    'DZD',
+    'EGP',
+    'ERN',
+    'ETB',
+    'EUR',
+    'FJD',
+    'FKP',
+    'FOK',
+    'GBP',
+    'GEL',
+    'GGP',
+    'GHS',
+    'GIP',
+    'GMD',
+    'GNF',
+    'GTQ',
+    'GYD',
+    'HKD',
+    'HNL',
+    'HRK',
+    'HTG',
+    'HUF',
+    'IDR',
+    'ILS',
+    'IMP',
+    'INR',
+    'IQD',
+    'IRR',
+    'ISK',
+    'JEP',
+    'JMD',
+    'JOD',
+    'JPY',
+    'KES',
+    'KGS',
+    'KHR',
+    'KID',
+    'KMF',
+    'KRW',
+    'KWD',
+    'KYD',
+    'KZT',
+    'LAK',
+    'LBP',
+    'LKR',
+    'LRD',
+    'LSL',
+    'LYD',
+    'MAD',
+    'MDL',
+    'MGA',
+    'MKD',
+    'MMK',
+    'MNT',
+    'MOP',
+    'MRU',
+    'MUR',
+    'MVR',
+    'MWK',
+    'MXN',
+    'MYR',
+    'MZN',
+    'NAD',
+    'NGN',
+    'NIO',
+    'NOK',
+    'NPR',
+    'NZD',
+    'OMR',
+    'PAB',
+    'PEN',
+    'PGK',
+    'PHP',
+    'PKR',
+    'PLN',
+    'PYG',
+    'QAR',
+    'RON',
+    'RSD',
+    'RUB',
+    'RWF',
+    'SAR',
+    'SBD',
+    'SCR',
+    'SDG',
+    'SEK',
+    'SGD',
+    'SHP',
+    'SLE',
+    'SLL',
+    'SOS',
+    'SRD',
+    'SSP',
+    'STN',
+    'SYP',
+    'SZL',
+    'THB',
+    'TJS',
+    'TMT',
+    'TND',
+    'TOP',
+    'TRY',
+    'TTD',
+    'TVD',
+    'TWD',
+    'TZS',
+    'UAH',
+    'UGX',
+    'UYU',
+    'UZS',
+    'VES',
+    'VND',
+    'VUV',
+    'WST',
+    'XAF',
+    'XCD',
+    'XDR',
+    'XOF',
+    'XPF',
+    'YER',
+    'ZAR',
+    'ZMW',
+    'ZWL'
+  ];
+  String selectedCurrencies = "JPY";
+
   final TextEditingController _amountController =
       TextEditingController(); // 次の会計金額入力用コントローラ
 
   @override
   void initState() {
     super.initState();
+    selectedCurrencies = "JPY";
+
     _fetchMemoData(); // Firestoreから支払データを取得
   }
 
@@ -44,7 +215,7 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
                 {},
           );
         });
-        _generatePaymentSuggestion(); // 取得後に支払提案を生成
+        _generatePaymentSuggestion(selectedCurrencies, rate); // 取得後に支払提案を生成
       } else {
         setState(() {
           suggestionResults = ["データが見つかりません"];
@@ -58,8 +229,29 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
     }
   }
 
+  Future<Map<String, dynamic>> _convertToJPY(
+      double amount, String? currency) async {
+    if (currency == 'JPY') {
+      return {'convertedAmount': amount, 'rate': 1.0};
+    }
+
+    final url =
+        'https://v6.exchangerate-api.com/v6/645a1985815f1f802148fe2f/latest/$currency';
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final rates = json.decode(response.body)['conversion_rates'];
+      if (rates.containsKey('JPY')) {
+        double rate = rates['JPY'];
+        double convertedAmount = amount * rate;
+        return {'convertedAmount': convertedAmount, 'rate': rate};
+      }
+    }
+    throw Exception("通貨レートの取得に失敗しました");
+  }
+
   // 支払提案ロジック
-  void _generatePaymentSuggestion() {
+  void _generatePaymentSuggestion(currency, rate) {
     // 各参加者の支払合計を計算
     Map<String, double> payMap = {
       for (var entry in amounts.entries)
@@ -99,6 +291,9 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
         if (amountToContribute > remainingAmount) {
           amountToContribute = remainingAmount;
         }
+        if (currency != "JPY") {
+          amountToContribute = amountToContribute / rate;
+        }
 
         if (amountToContribute > 0) {
           suggestions.add('$participant は ¥${amountToContribute.round()} 支払う');
@@ -122,20 +317,30 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
   }
 
   // 金額を追加して支払提案を更新
-  void _addAmount() {
-    final double? amount = double.tryParse(_amountController.text);
+  // 金額を追加して支払提案を更新
+  void _addAmount() async {
+    double? amount = double.tryParse(_amountController.text);
     if (amount != null && amount > 0) {
+      // 通貨を日本円に変換
+      final result = await _convertToJPY(amount, selectedCurrencies);
+      double convertedAmount = result["convertedAmount"];
+      double rate = result["rate"];
+
+      // 変換後の金額を設定し、支払提案を更新
       setState(() {
-        _generatePaymentSuggestion(); // 支払提案を更新
+        _amountController.text =
+            convertedAmount.toStringAsFixed(2); // 金額を日本円に変換して表示
+        _generatePaymentSuggestion(selectedCurrencies, rate); // 支払提案を更新
       });
       _amountController.clear();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(
-          "有効な金額を入力してください",
-          style: TextStyle(fontFamily: "Roboto"),
-        )),
+          content: Text(
+            "有効な金額を入力してください",
+            style: TextStyle(fontFamily: "Roboto"),
+          ),
+        ),
       );
     }
   }
@@ -158,24 +363,52 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
-              controller: _amountController,
-              decoration: InputDecoration(labelText: '次の会計金額'),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 40),
-            ElevatedButton(
-                onPressed: _addAmount,
-                child: Text(
-                  '金額を追加',
-                  style: TextStyle(
-                    fontFamily: "Roboto",
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start, // これで左寄せにできます
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _amountController,
+                    decoration: InputDecoration(labelText: '次の会計金額'),
+                    keyboardType: TextInputType.number,
                   ),
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF75A9D6),
-                  foregroundColor: Colors.white,
-                )),
+                const SizedBox(width: 8), // 文字通りの横の間隔を調整
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: DropdownButton<String>(
+                      value: selectedCurrencies,
+                      items: currencies.map((String currency) {
+                        return DropdownMenuItem<String>(
+                          value: currency,
+                          child: Text(currency),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedCurrencies = newValue ?? "JPY";
+                        });
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: _addAmount,
+                  child: Text(
+                    '金額を追加',
+                    style: TextStyle(
+                      fontFamily: "Roboto",
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF75A9D6),
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ],
+            ),
             Expanded(
               child: suggestionResults.isEmpty
                   ? Center(child: CircularProgressIndicator()) // データ取得中
