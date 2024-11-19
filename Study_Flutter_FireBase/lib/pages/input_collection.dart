@@ -140,7 +140,7 @@ class _CollectionInputPageState extends State<CollectionInputPage> {
           children: [
             const Center(
               child: Text(
-                'グループを作って仲間との支払記録を共有しましょう!',
+                'グループを作ってみんなと記録を共有しましょう!',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 18,

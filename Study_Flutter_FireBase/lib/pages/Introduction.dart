@@ -151,15 +151,31 @@ class IntroductionPage extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              "固定メンバーで支払管理！ \n過去の飲み会や旅行を確認することが出来るため、「あのときいくらはらったっけ？」と悩むる子羊にはなりません。",
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontFamily: 'Roboto',
-                                color: Colors.black87,
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "固定メンバーで一括管理！ ",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold, // 太文字にする
+                                      fontSize: 13,
+                                      fontFamily: 'Montserrat',
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        "\n過去の飲み会や旅行を確認することが出来るため、「あのときいくらはらったっけ？」と悩むことはありません。",
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontFamily: 'Roboto',
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              textAlign: TextAlign.center,
-                            ),
+                              textAlign: TextAlign.center, // テキストを中央揃えにする
+                            )
                           ],
                         ),
                       ),
@@ -178,15 +194,30 @@ class IntroductionPage extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              "誰でも支払入力！ \n支払入力画面の共有リンクを使えば、誰でも支払入力できます。",
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontFamily: 'Roboto',
-                                color: Colors.black87,
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "リンク共有で誰でも入力！",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold, // 太文字にする
+                                      fontSize: 13,
+                                      fontFamily: 'Montserrat',
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: "\n支払入力画面の共有リンクを使えば、誰でも支払入力できます。",
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontFamily: 'Roboto',
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              textAlign: TextAlign.center,
-                            ),
+                              textAlign: TextAlign.center, // テキストを中央揃えにする
+                            )
                           ],
                         ),
                       ),
@@ -222,15 +253,31 @@ class IntroductionPage extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              "効率の良い支払いを！ \n過去の支払情報から次のお会計の分配を行うことにより、個人の支払いのばらつきを小さくすることができます",
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontFamily: 'Roboto',
-                                color: Colors.black87,
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "効率の良い割り勘を！！",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold, // 太文字にする
+                                      fontSize: 13,
+                                      fontFamily: 'Montserrat',
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        "\n過去の支払情報から次のお会計の分配を行うことにより、個人の支払いのばらつきを小さくすることができます",
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontFamily: 'Roboto',
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              textAlign: TextAlign.center,
-                            ),
+                              textAlign: TextAlign.center, // テキストを中央揃えにする
+                            )
                           ],
                         ),
                       ),

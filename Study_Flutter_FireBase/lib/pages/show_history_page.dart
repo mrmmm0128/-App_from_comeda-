@@ -173,7 +173,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        "一人当たりのお支払い: ¥$perPersonPayment",
+                        "一人当たりの合計金額: ¥$perPersonPayment",
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 18,

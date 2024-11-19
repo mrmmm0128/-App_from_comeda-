@@ -350,73 +350,86 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "支払提案",
+          "支払提案", // アプリバーのタイトルを設定
           style: TextStyle(
-            fontFamily: 'Roboto',
+            fontFamily: 'Roboto', // フォントスタイルを指定
           ),
         ),
-        backgroundColor: const Color(0xFF75A9D6), //Appbarの色
-        foregroundColor: Colors.white,
-        elevation: 0,
+        backgroundColor: const Color(0xFF75A9D6), // AppBarの背景色
+        foregroundColor: Colors.white, // AppBarのアイコンや文字の色
+        elevation: 0, // AppBarの影をなくす
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0), // 全体の余白を16.0に設定
         child: Column(
           children: [
+            // 金額入力欄と通貨選択、追加ボタンを横並びに配置
             Row(
-              mainAxisAlignment: MainAxisAlignment.start, // これで左寄せにできます
+              mainAxisAlignment: MainAxisAlignment.start, // 左寄せにする
               children: [
+                // 金額を入力するためのTextField
                 Expanded(
                   child: TextField(
-                    controller: _amountController,
-                    decoration: InputDecoration(labelText: '次の会計金額'),
-                    keyboardType: TextInputType.number,
+                    controller: _amountController, // 入力された金額を管理するコントローラー
+                    decoration:
+                        InputDecoration(labelText: '次の会計金額'), // ラベルのテキスト
+                    keyboardType: TextInputType.number, // 数字入力のみ
                   ),
                 ),
-                const SizedBox(width: 8), // 文字通りの横の間隔を調整
+                const SizedBox(width: 8), // 金額入力欄と通貨選択欄の間隔を8に設定
+                // 通貨選択用のドロップダウンメニュー
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8.0), // 横の余白
                     child: DropdownButton<String>(
-                      value: selectedCurrencies,
+                      value: selectedCurrencies, // 現在選択されている通貨
                       items: currencies.map((String currency) {
+                        // 通貨のリストから選択肢を生成
                         return DropdownMenuItem<String>(
                           value: currency,
                           child: Text(currency),
                         );
                       }).toList(),
                       onChanged: (String? newValue) {
+                        // 通貨が変更された際の処理
                         setState(() {
-                          selectedCurrencies = newValue ?? "JPY";
+                          selectedCurrencies = newValue ?? "JPY"; // 選択された通貨を保存
                         });
                       },
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 8), // 通貨選択欄と追加ボタンの間隔を8に設定
+                // 「金額を追加」ボタン
                 ElevatedButton(
-                  onPressed: _addAmount,
+                  onPressed: _addAmount, // 追加ボタンが押されたときの処理
                   child: Text(
-                    '金額を追加',
+                    '金額を追加', // ボタンのテキスト
                     style: TextStyle(
-                      fontFamily: "Roboto",
+                      fontFamily: "Roboto", // フォントスタイルを指定
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF75A9D6),
-                    foregroundColor: Colors.white,
+                    backgroundColor: const Color(0xFF75A9D6), // ボタンの背景色
+                    foregroundColor: Colors.white, // ボタン内の文字色
                   ),
                 ),
               ],
             ),
+            // 結果を表示する部分（支払提案のリスト）
             Expanded(
               child: suggestionResults.isEmpty
-                  ? Center(child: CircularProgressIndicator()) // データ取得中
+                  ? Center(
+                      child:
+                          CircularProgressIndicator()) // データが空の場合、ローディングインディケーターを表示
                   : ListView.builder(
-                      itemCount: suggestionResults.length,
+                      itemCount: suggestionResults.length, // 提案結果の数
                       itemBuilder: (context, index) {
+                        // 提案結果をリストとして表示
                         return ListTile(
-                          title: Text(suggestionResults[index]),
+                          title: Text(
+                              suggestionResults[index]), // 提案内容をリストのアイテムとして表示
                         );
                       },
                     ),
@@ -424,7 +437,7 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
           ],
         ),
       ),
-      backgroundColor: const Color(0xFFE0ECF8), // 背景色
+      backgroundColor: const Color(0xFFE0ECF8), // 背景色を設定
     );
   }
 }
