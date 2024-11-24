@@ -20,7 +20,7 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- iOS meta tags & icons -->
   <meta name="google-site-verification" content="dOeOQ3bkQASlRYOi2aUBO29Pn6OWSLy-BICzur7BCaA" />
   <meta name="google-site-verification" content="3186oWMlhs3Lmawr2488kgZpGEzJtuotcZEYGJxlvFM" />
@@ -41,12 +41,37 @@
   <!-- タイトルを変更 -->
   <title>みんなで割り勘</title>
   <link rel="manifest" href="manifest.json">
+
+  <style>
+    /* Flutterアプリを前面に表示 */
+    .flutter-app {
+      position: relative; /* z-indexを適用するために必要 */
+      z-index: 10; /* 前面に配置 */
+    }
+  
+    /* 広告を背面に表示 */
+    .ad-container {
+      position: absolute; /* z-indexを適用するために必要 */
+      z-index: 0; /* 背面に配置 */
+    }
+  </style>
 </head>
 <body>
-<script src="flutter_bootstrap.js" async>
-  if (window.location.pathname != '/') {
-    window.history.replaceState({}, '', '/');
-  }
-</script>
+<!-- Flutterアプリ部分 -->
+<div class="flutter-app">
+  <script src="flutter_bootstrap.js" async>
+    if (window.location.pathname != '/') {
+      window.history.replaceState({}, '', '/');
+    }
+  </script>
+</div>
+
+<!-- 広告部分 -->
+<div class="ad-container">
+  <script src="https://adm.shinobi.jp/s/07edd24a14d11f6daa32008f72516fed"></script>
+</div>
+<!-- admax -->
+<script src="https://adm.shinobi.jp/s/594ac0e46c5f6a5976e74c1e90f5a418"></script>
+<!-- admax -->
 </body>
 </html>
