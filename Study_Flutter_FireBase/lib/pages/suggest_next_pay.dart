@@ -363,22 +363,81 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
         padding: const EdgeInsets.all(16.0), // 全体の余白を16.0に設定
         child: Column(
           children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center, // これで縦方向の中央揃えが可能
+              children: [
+                Container(
+                  width: 180,
+                  height: 180,
+                  child: ClipOval(
+                    child: const Image(
+                      image: AssetImage('images/支払提案.jpg'), // 表示したい画像
+                      fit: BoxFit.cover, // 画像がコンテナ内に収まるように調整
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 30), // 画像とテキストの間の余白
+                const Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft, // 左揃えにする
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: "次のお会計金額を入力。 ",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold, // 太文字にする
+                                  fontSize: 13,
+                                  fontFamily: 'Montserrat',
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              TextSpan(
+                                text:
+                                    "これまでの支払い状況を考慮して\n「誰がいくら払うべきか」\nを教えてもらいましょう。",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontFamily: 'Roboto',
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ],
+                          ),
+                          textAlign: TextAlign.center, // テキストを中央揃えにする
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
             // 金額入力欄と通貨選択、追加ボタンを横並びに配置
             Row(
-              mainAxisAlignment: MainAxisAlignment.start, // 左寄せにする
+              crossAxisAlignment: CrossAxisAlignment.center, // 子要素を中心揃えに設定
+              mainAxisAlignment: MainAxisAlignment.start, // 左寄せ
               children: [
                 // 金額を入力するためのTextField
                 Expanded(
-                  child: TextField(
-                    controller: _amountController, // 入力された金額を管理するコントローラー
-                    decoration:
-                        InputDecoration(labelText: '次の会計金額'), // ラベルのテキスト
-                    keyboardType: TextInputType.number, // 数字入力のみ
+                  child: SizedBox(
+                    height: 60, // 高さを統一
+                    child: TextField(
+                      controller: _amountController, // 入力された金額を管理するコントローラー
+                      decoration: InputDecoration(
+                        labelText: '次の会計金額', // ラベルのテキスト
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 16), // 縦方向の余白調整
+                      ),
+                      keyboardType: TextInputType.number, // 数字入力のみ
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8), // 金額入力欄と通貨選択欄の間隔を8に設定
                 // 通貨選択用のドロップダウンメニュー
-                Expanded(
+                SizedBox(
+                  height: 60, // 高さを統一
                   child: Padding(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8.0), // 横の余白
@@ -402,17 +461,20 @@ class _PaymentSuggestionPageState extends State<PaymentSuggestionPage> {
                 ),
                 const SizedBox(width: 8), // 通貨選択欄と追加ボタンの間隔を8に設定
                 // 「金額を追加」ボタン
-                ElevatedButton(
-                  onPressed: _addAmount, // 追加ボタンが押されたときの処理
-                  child: Text(
-                    '金額を追加', // ボタンのテキスト
-                    style: TextStyle(
-                      fontFamily: "Roboto", // フォントスタイルを指定
+                SizedBox(
+                  height: 60, // 高さを統一
+                  child: ElevatedButton(
+                    onPressed: _addAmount, // 追加ボタンが押されたときの処理
+                    child: Text(
+                      '金額を追加', // ボタンのテキスト
+                      style: TextStyle(
+                        fontFamily: "Roboto", // フォントスタイルを指定
+                      ),
                     ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF75A9D6), // ボタンの背景色
-                    foregroundColor: Colors.white, // ボタン内の文字色
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF75A9D6), // ボタンの背景色
+                      foregroundColor: Colors.white, // ボタン内の文字色
+                    ),
                   ),
                 ),
               ],

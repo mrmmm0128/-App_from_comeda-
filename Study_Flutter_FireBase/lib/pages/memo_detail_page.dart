@@ -7,6 +7,10 @@ import 'package:study_flutter_firebase/pages/suggest_next_pay.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:study_flutter_firebase/pages/explain.dart';
+import 'package:study_flutter_firebase/pages/privacypolicy.dart';
+import 'package:study_flutter_firebase/pages/servicerule.dart';
+import 'package:study_flutter_firebase/pages/our_information.dart';
+import 'dart:html' as html;
 
 class MemoDetailPage extends StatefulWidget {
   const MemoDetailPage(
@@ -441,31 +445,43 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
     );
   }
 
+  void _navigateToPrivacyPolicy(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PrivacyPolicyPage()),
+    );
+  }
+
+  // GoogleフォームのURLを開く関数
+  void _launchContactForm() {
+    html.window.open(
+      'https://docs.google.com/forms/d/e/1FAIpQLSfHpmSHm5SBAARgemK39rfeWldmxmLPmfFU0BM1uuUXWYX3Hw/viewform?usp=sf_link',
+      '_blank',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
           title,
-          style: TextStyle(
-            fontFamily: 'Roboto',
-          ),
+          style: TextStyle(fontFamily: 'Roboto'),
         ),
-        backgroundColor: const Color(0xFF75A9D6), // Appbar color
+        backgroundColor: const Color(0xFF75A9D6),
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.help_outline), // ボタンのアイコン
-            onPressed: () => _navigateToExplain(context), // ページ遷移
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => _navigateToExplain(context),
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
@@ -481,72 +497,77 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
                   ),
                 )
               else
-                ...List.generate(participants.length, (index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            participants[index],
-                            style: const TextStyle(
-                                fontSize: 20, fontFamily: "Roboto"),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Container(
-                            width: 100,
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.blue.shade100,
-                                  blurRadius: 6,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
+                Column(
+                  children: List.generate(participants.length, (index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              participants[index],
+                              style: const TextStyle(
+                                  fontSize: 20, fontFamily: "Roboto"),
                             ),
-                            child: TextField(
-                              controller: _amountControllers[index],
-                              decoration: const InputDecoration(
-                                labelText: '金額',
-                                border: InputBorder.none,
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Container(
+                              width: 100,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.blue.shade100,
+                                    blurRadius: 6,
+                                    offset: Offset(0, 3),
+                                  ),
+                                ],
                               ),
-                              keyboardType: TextInputType.number,
+                              child: TextField(
+                                controller: _amountControllers[index],
+                                decoration: const InputDecoration(
+                                  labelText: '金額',
+                                  border: InputBorder.none,
+                                ),
+                                keyboardType: TextInputType.number,
+                              ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: DropdownButton<String>(
-                              value: selectedCurrencies[index],
-                              items: currencies.map((String currency) {
-                                return DropdownMenuItem<String>(
-                                  value: currency,
-                                  child: Text(currency),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  selectedCurrencies[index] = newValue ?? "JPY";
-                                });
-                              }),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.note_add),
-                          onPressed: () {
-                            _showMemoInputDialog(
-                                index); // Show memo input dialog
-                          },
-                        ),
-                      ],
-                    ),
-                  );
-                }),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: DropdownButton<String>(
+                                value: selectedCurrencies[index],
+                                items: currencies.map((String currency) {
+                                  return DropdownMenuItem<String>(
+                                    value: currency,
+                                    child: Text(currency),
+                                  );
+                                }).toList(),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    selectedCurrencies[index] =
+                                        newValue ?? "JPY";
+                                  });
+                                }),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.note_add),
+                            onPressed: () {
+                              _showMemoInputDialog(index);
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ),
               const SizedBox(height: 30),
               Center(
                 child: Column(
@@ -554,8 +575,7 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
                     Align(
                       alignment: Alignment.center,
                       child: SizedBox(
-                        width: MediaQuery.of(context).size.width *
-                            0.4, // 横幅を80%に設定
+                        width: MediaQuery.of(context).size.width * 0.4,
                         child: ElevatedButton(
                           onPressed: saveData,
                           style: ElevatedButton.styleFrom(
@@ -648,7 +668,6 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // 清算ボタンを一番下に配置し、目立たせる
                     Align(
                       alignment: Alignment.center,
                       child: SizedBox(
@@ -676,11 +695,58 @@ class _MemoDetailPageState extends State<MemoDetailPage> {
                   ],
                 ),
               ),
+              const SizedBox(height: 40),
+              const Divider(),
+              const SizedBox(height: 20),
+              TextButton(
+                onPressed: () => _navigateToPrivacyPolicy(context),
+                child: const Text(
+                  'プライバシーポリシー',
+                  style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                ),
+              ),
+              TextButton(
+                onPressed: _launchContactForm,
+                child: const Text(
+                  'お問い合わせ',
+                  style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => servicerule(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  '利用規約',
+                  style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AboutUsPage(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  '運営元情報',
+                  style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                ),
+              ),
+              const Spacer(),
+              const SizedBox(height: 200),
             ],
           ),
         ),
       ),
-      backgroundColor: const Color(0xFFE0ECF8), // Background color
+      backgroundColor: const Color(0xFFE0ECF8),
     );
   }
 }

@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:study_flutter_firebase/pages/add_memo_page.dart';
 import 'package:study_flutter_firebase/pages/top_page.dart';
+import 'package:study_flutter_firebase/pages/privacypolicy.dart';
+import 'package:study_flutter_firebase/pages/servicerule.dart';
+import 'package:study_flutter_firebase/pages/our_information.dart';
+import 'dart:html' as html;
 
 class CollectionInputPage extends StatefulWidget {
   final String deviceId;
@@ -27,6 +31,21 @@ class _CollectionInputPageState extends State<CollectionInputPage> {
       print("Error checking group: $e");
       return false;
     }
+  }
+
+  void _navigateToPrivacyPolicy(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PrivacyPolicyPage()),
+    );
+  }
+
+  // GoogleフォームのURLを開く関数
+  void _launchContactForm() {
+    html.window.open(
+      'https://docs.google.com/forms/d/e/1FAIpQLSfHpmSHm5SBAARgemK39rfeWldmxmLPmfFU0BM1uuUXWYX3Hw/viewform?usp=sf_link',
+      '_blank',
+    );
   }
 
   // 既存グループに移動
@@ -133,110 +152,114 @@ class _CollectionInputPageState extends State<CollectionInputPage> {
         foregroundColor: Colors.white,
         elevation: 4,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Center(
-              child: Text(
-                'グループを作ってみんなと記録を共有しましょう!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Roboto',
-                  color: Colors.blueGrey,
+      body: SingleChildScrollView(
+        // スクロール可能にする
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Center(
+                child: Text(
+                  'グループを作ってみんなと記録を共有しましょう!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Roboto',
+                    color: Colors.blueGrey,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 30),
-            // 既存グループの検索フィールド
-            TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                labelText: 'グループ名',
-                labelStyle: TextStyle(color: Colors.blueGrey),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blue.shade400),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => _navigateToNextPage(_controller.text),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF75A9D6),
-                foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+              const SizedBox(height: 30),
+              // 既存グループの検索フィールド
+              TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  labelText: 'グループ名',
+                  labelStyle: TextStyle(color: Colors.blueGrey),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue.shade400),
+                  ),
                 ),
               ),
-              child: const Text(
-                '既存グループに移動',
-                style: TextStyle(fontFamily: "Roboto", fontSize: 16),
-              ),
-            ),
-            const Divider(
-              height: 40,
-              color: Colors.blueGrey,
-              thickness: 1.0,
-            ),
-            // 新しいグループ名の入力フィールド
-            TextField(
-              controller: _newGroupController,
-              decoration: InputDecoration(
-                labelText: '新しいグループ名',
-                labelStyle: TextStyle(color: Colors.blueGrey),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => _navigateToNextPage(_controller.text),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF75A9D6),
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blue.shade400),
+                child: const Text(
+                  '既存グループに移動',
+                  style: TextStyle(fontFamily: "Roboto", fontSize: 16),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () =>
-                  _createNewGroupAndNavigate(_newGroupController.text),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF75A9D6),
-                foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+              const Divider(
+                height: 40,
+                color: Colors.blueGrey,
+                thickness: 1.0,
+              ),
+              // 新しいグループ名の入力フィールド
+              TextField(
+                controller: _newGroupController,
+                decoration: InputDecoration(
+                  labelText: '新しいグループ名',
+                  labelStyle: TextStyle(color: Colors.blueGrey),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue.shade400),
+                  ),
                 ),
               ),
-              child: const Text(
-                '新しいグループを作成',
-                style: TextStyle(fontFamily: "Roboto", fontSize: 16),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () =>
+                    _createNewGroupAndNavigate(_newGroupController.text),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF75A9D6),
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: const Text(
+                  '新しいグループを作成',
+                  style: TextStyle(fontFamily: "Roboto", fontSize: 16),
+                ),
               ),
-            ),
-            const Divider(
-              height: 40,
-              color: Colors.blueGrey,
-              thickness: 1.0,
-            ),
-            // グループリストを表示するFutureBuilder
-            FutureBuilder<List<String>>(
-              future: getGroups(widget.deviceId), // getGroups関数を呼び出し
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                }
-                if (snapshot.hasError) {
-                  return Text('エラーが発生しました: ${snapshot.error}');
-                }
-                final groups = snapshot.data ?? [];
-                return Expanded(
-                  child: ListView.builder(
+              const Divider(
+                height: 40,
+                color: Colors.blueGrey,
+                thickness: 1.0,
+              ),
+              // グループリストを表示するFutureBuilder
+              FutureBuilder<List<String>>(
+                future: getGroups(widget.deviceId),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+                  if (snapshot.hasError) {
+                    return Text('エラーが発生しました: ${snapshot.error}');
+                  }
+                  final groups = snapshot.data ?? [];
+                  return ListView.builder(
+                    physics:
+                        const NeverScrollableScrollPhysics(), // 親スクロールと競合しないようにする
+                    shrinkWrap: true, // サイズを調整
                     itemCount: groups.length,
                     itemBuilder: (context, index) {
                       return InkWell(
@@ -245,39 +268,90 @@ class _CollectionInputPageState extends State<CollectionInputPage> {
                           _navigateToNextPage(groups[index]);
                         },
                         child: Container(
-                          margin: const EdgeInsets.symmetric(
-                              vertical: 8.0), // 上下に少しスペース
+                          margin: const EdgeInsets.symmetric(vertical: 8.0),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF75A9D6), // ボタンと同じ色に統一
-                            borderRadius:
-                                BorderRadius.circular(20), // ボタンの角を丸くする
+                            color: const Color(0xFF75A9D6),
+                            borderRadius: BorderRadius.circular(20),
                           ),
                           child: ListTile(
                             title: Text(
                               groups[index],
                               style: const TextStyle(
-                                color: Colors.white, // 文字色を白に設定
+                                color: Colors.white,
                                 fontSize: 16,
                               ),
                             ),
                             contentPadding: const EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 24), // パディング
+                                vertical: 12, horizontal: 24),
                             leading: const Icon(
                               Icons.group,
-                              color: Colors.white, // アイコンの色も白
+                              color: Colors.white,
                             ),
                           ),
                         ),
                       );
                     },
-                  ),
-                );
-              },
-            )
-          ],
+                  );
+                },
+              ),
+              Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center, // 水平方向の中央揃え
+                  children: [
+                    const SizedBox(height: 40),
+                    const Divider(),
+                    const SizedBox(height: 20),
+                    TextButton(
+                      onPressed: () => _navigateToPrivacyPolicy(context),
+                      child: const Text(
+                        'プライバシーポリシー',
+                        style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: _launchContactForm,
+                      child: const Text(
+                        'お問い合わせ',
+                        style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => servicerule(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        '利用規約',
+                        style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AboutUsPage(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        '運営元情報',
+                        style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                      ),
+                    ),
+                    const SizedBox(height: 200),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
-      backgroundColor: const Color(0xFFE0ECF8), // 背景色
+      backgroundColor: const Color(0xFFE0ECF8),
     );
   }
 }

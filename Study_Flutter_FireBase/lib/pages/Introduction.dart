@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:study_flutter_firebase/pages/input_collection.dart';
 import 'package:study_flutter_firebase/pages/explain.dart';
 import 'package:study_flutter_firebase/pages/privacypolicy.dart';
+import 'package:study_flutter_firebase/pages/servicerule.dart';
+import 'package:study_flutter_firebase/pages/our_information.dart';
+import 'package:study_flutter_firebase/model/cliper.dart';
 import 'dart:html' as html;
 
 class IntroductionPage extends StatelessWidget {
@@ -64,7 +67,6 @@ class IntroductionPage extends StatelessWidget {
         elevation: 0,
       ),
       body: SingleChildScrollView(
-        // ここでスクロールを可能にする
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -73,10 +75,14 @@ class IntroductionPage extends StatelessWidget {
               children: [
                 const SizedBox(height: 60),
                 Center(
-                  child: Icon(
-                    Icons.group,
-                    size: 80,
-                    color: Colors.blue.shade300,
+                  child: ClipPath(
+                    clipper: RoundedCornersClipper(),
+                    child: Image.asset(
+                      'images/icon.jpg', // 画像のパス
+                      width: 200,
+                      height: 200,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -302,12 +308,35 @@ class IntroductionPage extends StatelessWidget {
                   ),
                 ),
                 TextButton(
-                  onPressed: _launchContactForm,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => servicerule(),
+                      ),
+                    );
+                  },
                   child: const Text(
                     '利用規約',
                     style: TextStyle(fontSize: 16, color: Colors.blueGrey),
                   ),
                 ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AboutUsPage(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    '運営元情報',
+                    style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                  ),
+                ),
+                const Spacer(),
+                const SizedBox(height: 200),
               ],
             ),
           ),

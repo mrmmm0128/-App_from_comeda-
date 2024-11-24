@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:study_flutter_firebase/pages/top_page.dart';
+import 'package:study_flutter_firebase/pages/privacypolicy.dart';
+import 'package:study_flutter_firebase/pages/servicerule.dart';
+import 'package:study_flutter_firebase/pages/our_information.dart';
+import 'dart:html' as html;
 
 class AddMemoPage extends StatefulWidget {
   const AddMemoPage({super.key, required this.collectionName});
@@ -35,6 +39,21 @@ class _AddMemoPageState extends State<AddMemoPage> {
       "amounts": amounts, // 参加者ごとの履歴リストを初期化
       "date": Timestamp.now(),
     });
+  }
+
+  void _navigateToPrivacyPolicy(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PrivacyPolicyPage()),
+    );
+  }
+
+  // GoogleフォームのURLを開く関数
+  void _launchContactForm() {
+    html.window.open(
+      'https://docs.google.com/forms/d/e/1FAIpQLSfHpmSHm5SBAARgemK39rfeWldmxmLPmfFU0BM1uuUXWYX3Hw/viewform?usp=sf_link',
+      '_blank',
+    );
   }
 
   void _addParticipantField() {
@@ -207,6 +226,53 @@ class _AddMemoPageState extends State<AddMemoPage> {
                       const Text("確定", style: TextStyle(fontFamily: "Roboto")),
                 ),
               ),
+              const SizedBox(height: 40),
+              const Divider(),
+              const SizedBox(height: 20),
+              TextButton(
+                onPressed: () => _navigateToPrivacyPolicy(context),
+                child: const Text(
+                  'プライバシーポリシー',
+                  style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                ),
+              ),
+              TextButton(
+                onPressed: _launchContactForm,
+                child: const Text(
+                  'お問い合わせ',
+                  style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => servicerule(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  '利用規約',
+                  style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AboutUsPage(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  '運営元情報',
+                  style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                ),
+              ),
+              const Spacer(),
+              const SizedBox(height: 200),
             ],
           ),
         ),
