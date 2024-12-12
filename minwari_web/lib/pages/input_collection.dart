@@ -1,0 +1,427 @@
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:study_flutter_firebase/pages/add_memo_page.dart';
+import 'package:study_flutter_firebase/pages/top_page.dart';
+import 'package:study_flutter_firebase/pages/privacypolicy.dart';
+import 'package:study_flutter_firebase/pages/servicerule.dart';
+import 'package:study_flutter_firebase/pages/our_information.dart';
+import 'dart:html' as html;
+
+class CollectionInputPage extends StatefulWidget {
+  final String deviceId;
+
+  // コンストラクタで deviceId を受け取るように修正
+  const CollectionInputPage({super.key, required this.deviceId});
+
+  @override
+  _CollectionInputPageState createState() => _CollectionInputPageState();
+}
+
+class _CollectionInputPageState extends State<CollectionInputPage> {
+  final TextEditingController _controller = TextEditingController();
+  final TextEditingController _newGroupController = TextEditingController();
+  List<TextEditingController> memberControllers = [];
+  // Firestoreに新しいグループがすでに存在するかを確認する非同期関数
+  Future<bool> _checkIfGroupExists(String groupName) async {
+    try {
+      final snapshot =
+          await FirebaseFirestore.instance.collection(groupName).get();
+      return snapshot.docs.isNotEmpty; // ドキュメントがあれば、グループ名は既に存在
+    } catch (e) {
+      print("Error checking group: $e");
+      return false;
+    }
+  }
+
+  void _navigateToPrivacyPolicy(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PrivacyPolicyPage()),
+    );
+  }
+
+  // GoogleフォームのURLを開く関数
+  void _launchContactForm() {
+    html.window.open(
+      'https://docs.google.com/forms/d/e/1FAIpQLSfHpmSHm5SBAARgemK39rfeWldmxmLPmfFU0BM1uuUXWYX3Hw/viewform?usp=sf_link',
+      '_blank',
+    );
+  }
+
+  // 既存グループに移動
+  void _navigateToNextPage(String collectionName) async {
+    if (collectionName.isNotEmpty) {
+      // グループが存在するか確認
+      bool groupExists = await _checkIfGroupExists(collectionName);
+
+      if (groupExists) {
+        saveGroup(widget.deviceId, collectionName);
+        // グループが存在すればページ遷移
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MyHomePage(collectionName: collectionName),
+          ),
+        );
+      } else {
+        // グループが存在しない場合、エラーメッセージを表示
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('指定されたグループは存在しません')),
+        );
+      }
+    } else {
+      // グループ名が空の場合、エラーメッセージを表示
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('グループ名を入力してください')),
+      );
+    }
+  }
+
+  // 新しいグループを作成
+  void _createNewGroupAndNavigate(String groupName) async {
+    if (groupName.isNotEmpty) {
+      bool groupExists = await _checkIfGroupExists(groupName);
+
+      if (!groupExists) {
+        // 新しいコレクションを作成し、指定ドキュメントを追加
+        final firestore = FirebaseFirestore.instance;
+        await firestore
+            .collection(groupName)
+            .doc("korehahyoujishinaiyo")
+            .set({"exampleField": "exampleValue"});
+
+        // グループを保存して画面遷移
+        saveGroup(widget.deviceId, groupName);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AddMemoPage(collectionName: groupName),
+          ),
+        );
+
+        // 作成成功のメッセージ
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('新しいグループが作成されました')),
+        );
+      } else {
+        // グループ名が既存の場合のエラーメッセージ
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('このグループ名はすでに使われています')),
+        );
+      }
+    } else {
+      // 空のグループ名の場合のエラーメッセージ
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('新しいグループ名を入力してください')),
+      );
+    }
+  }
+
+  Future<void> saveGroup(String deviceId, String groupName) async {
+    final deviceRef =
+        FirebaseFirestore.instance.collection('devices').doc(deviceId);
+
+    final doc = await deviceRef.get();
+
+    if (doc.exists) {
+      // 既存のグループリストに追加
+      final groups = List<String>.from(doc['groups'] ?? []);
+      if (!groups.contains(groupName)) {
+        groups.add(groupName);
+        await deviceRef.update({'groups': groups});
+      }
+    } else {
+      // 新規デバイスの場合
+      await deviceRef.set({
+        'groups': [groupName]
+      });
+    }
+  }
+
+  Future<List<String>> getGroups(String deviceId) async {
+    final doc = await FirebaseFirestore.instance
+        .collection('devices')
+        .doc(deviceId)
+        .get();
+    if (doc.exists) {
+      return List<String>.from(doc['groups'] ?? []);
+    }
+    return [];
+  }
+
+  Future<List<String>> getValidGroups(String deviceId) async {
+    final firestore = FirebaseFirestore.instance;
+
+    // グループ一覧を取得
+    final allGroups = await getGroups(deviceId);
+
+    List<String> validGroups = [];
+    for (String group in allGroups) {
+      final collectionSnapshot =
+          await firestore.collection(group).limit(1).get();
+      if (collectionSnapshot.docs.isNotEmpty) {
+        validGroups.add(group);
+      }
+    }
+    return validGroups;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "グループ名入力",
+          style: TextStyle(
+            fontFamily: 'Roboto',
+            fontSize: 22,
+          ),
+        ),
+        backgroundColor: const Color(0xFF75A9D6), // AppBarの色
+        foregroundColor: Colors.white,
+        elevation: 4,
+      ),
+      body: SingleChildScrollView(
+        // スクロール可能にする
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Center(
+                child: Text(
+                  'グループを作ってみんなと記録を共有しましょう!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Roboto',
+                    color: Colors.blueGrey,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
+              // 既存グループの検索フィールド
+              TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  labelText: 'グループ名',
+                  labelStyle: TextStyle(color: Colors.blueGrey),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue.shade400),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => _navigateToNextPage(_controller.text),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF75A9D6),
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: const Text(
+                  '既存グループに移動',
+                  style: TextStyle(fontFamily: "Roboto", fontSize: 16),
+                ),
+              ),
+              const Divider(
+                height: 40,
+                color: Colors.blueGrey,
+                thickness: 1.0,
+              ),
+              // 新しいグループ名の入力フィールド
+              TextField(
+                controller: _newGroupController,
+                decoration: InputDecoration(
+                  labelText: '新しいグループ名',
+                  labelStyle: TextStyle(color: Colors.blueGrey),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue.shade400),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () =>
+                    _createNewGroupAndNavigate(_newGroupController.text),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF75A9D6),
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: const Text(
+                  '新しいグループを作成',
+                  style: TextStyle(fontFamily: "Roboto", fontSize: 16),
+                ),
+              ),
+              const Divider(
+                height: 40,
+                color: Colors.blueGrey,
+                thickness: 1.0,
+              ),
+              // グループリストを表示するFutureBuilder
+              // グループリストを表示するFutureBuilder
+              FutureBuilder<List<String>>(
+                future: getValidGroups(widget.deviceId),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+                  if (snapshot.hasError) {
+                    return Text('エラーが発生しました: ${snapshot.error}');
+                  }
+                  final groups = snapshot.data ?? [];
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          '過去に参加したグループ',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blueGrey,
+                          ),
+                        ),
+                      ),
+                      ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: groups.length,
+                        itemBuilder: (context, index) {
+                          return InkWell(
+                            onTap: () {
+                              _navigateToNextPage(groups[index]);
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 8.0),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF75A9D6),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: ListTile(
+                                title: Text(
+                                  groups[index],
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 24),
+                                leading: const Icon(
+                                  Icons.group,
+                                  color: Colors.white,
+                                ),
+                                trailing: IconButton(
+                                  icon: Icon(Icons.delete, color: Colors.white),
+                                  onPressed: () async {
+                                    // Remove the group from the 'groups' field in Firestore
+                                    await FirebaseFirestore.instance
+                                        .collection('devices')
+                                        .doc(widget.deviceId)
+                                        .update({
+                                      'groups': FieldValue.arrayRemove(
+                                          [groups[index]]),
+                                    });
+
+                                    // Update the UI by removing the group from the list
+                                    setState(() {
+                                      groups.removeAt(index);
+                                    });
+
+                                    // Show a SnackBar
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content:
+                                            Text('${groups[index]}が削除されました'),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                },
+              ),
+              Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center, // 水平方向の中央揃え
+                  children: [
+                    const SizedBox(height: 40),
+                    const Divider(),
+                    const SizedBox(height: 20),
+                    TextButton(
+                      onPressed: () => _navigateToPrivacyPolicy(context),
+                      child: const Text(
+                        'プライバシーポリシー',
+                        style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: _launchContactForm,
+                      child: const Text(
+                        'お問い合わせ',
+                        style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => servicerule(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        '利用規約',
+                        style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AboutUsPage(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        '運営元情報',
+                        style: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                      ),
+                    ),
+                    const SizedBox(height: 200),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+      backgroundColor: const Color(0xFFE0ECF8),
+    );
+  }
+}
