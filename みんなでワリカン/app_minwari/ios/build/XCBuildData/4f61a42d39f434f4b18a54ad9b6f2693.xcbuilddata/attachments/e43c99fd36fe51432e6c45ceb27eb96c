@@ -1,0 +1,20 @@
+{
+  "" : {
+    "const-values" : "/Users/takasesouta/Developer/App_from_comeda/app_minwari/ios/build/Pods.build/Release-iphoneos/FirebaseSharedSwift.build/Objects-normal/arm64/FirebaseSharedSwift-master.swiftconstvalues",
+    "dependencies" : "/Users/takasesouta/Developer/App_from_comeda/app_minwari/ios/build/Pods.build/Release-iphoneos/FirebaseSharedSwift.build/Objects-normal/arm64/FirebaseSharedSwift-master.d",
+    "diagnostics" : "/Users/takasesouta/Developer/App_from_comeda/app_minwari/ios/build/Pods.build/Release-iphoneos/FirebaseSharedSwift.build/Objects-normal/arm64/FirebaseSharedSwift-master.dia",
+    "emit-module-dependencies" : "/Users/takasesouta/Developer/App_from_comeda/app_minwari/ios/build/Pods.build/Release-iphoneos/FirebaseSharedSwift.build/Objects-normal/arm64/FirebaseSharedSwift-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/takasesouta/Developer/App_from_comeda/app_minwari/ios/build/Pods.build/Release-iphoneos/FirebaseSharedSwift.build/Objects-normal/arm64/FirebaseSharedSwift-master-emit-module.dia",
+    "swift-dependencies" : "/Users/takasesouta/Developer/App_from_comeda/app_minwari/ios/build/Pods.build/Release-iphoneos/FirebaseSharedSwift.build/Objects-normal/arm64/FirebaseSharedSwift-master.swiftdeps"
+  },
+  "/Users/takasesouta/Developer/App_from_comeda/app_minwari/ios/Pods/FirebaseSharedSwift/FirebaseSharedSwift/Sources/FirebaseRemoteConfigValueDecoding.swift" : {
+    "index-unit-output-path" : "/Pods.build/Release-iphoneos/FirebaseSharedSwift.build/Objects-normal/arm64/FirebaseRemoteConfigValueDecoding.o",
+    "llvm-bc" : "/Users/takasesouta/Developer/App_from_comeda/app_minwari/ios/build/Pods.build/Release-iphoneos/FirebaseSharedSwift.build/Objects-normal/arm64/FirebaseRemoteConfigValueDecoding.bc",
+    "object" : "/Users/takasesouta/Developer/App_from_comeda/app_minwari/ios/build/Pods.build/Release-iphoneos/FirebaseSharedSwift.build/Objects-normal/arm64/FirebaseRemoteConfigValueDecoding.o"
+  },
+  "/Users/takasesouta/Developer/App_from_comeda/app_minwari/ios/Pods/FirebaseSharedSwift/FirebaseSharedSwift/Sources/third_party/FirebaseDataEncoder/FirebaseDataEncoder.swift" : {
+    "index-unit-output-path" : "/Pods.build/Release-iphoneos/FirebaseSharedSwift.build/Objects-normal/arm64/FirebaseDataEncoder.o",
+    "llvm-bc" : "/Users/takasesouta/Developer/App_from_comeda/app_minwari/ios/build/Pods.build/Release-iphoneos/FirebaseSharedSwift.build/Objects-normal/arm64/FirebaseDataEncoder.bc",
+    "object" : "/Users/takasesouta/Developer/App_from_comeda/app_minwari/ios/build/Pods.build/Release-iphoneos/FirebaseSharedSwift.build/Objects-normal/arm64/FirebaseDataEncoder.o"
+  }
+}
